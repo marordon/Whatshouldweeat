@@ -17,6 +17,10 @@ import android.location.LocationManager;
 import android.location.Location;
 import android.content.Context;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONArray;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -137,111 +141,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     public void onClickFood(View view) {
 
-
-        String randomWord = "";
-        Random randomGenerator = new Random();
-        int randomInt = randomGenerator.nextInt(33);
-        if (randomInt == 1) {
-            randomWord = "Wendy's";
-        }
-        if (randomInt == 2) {
-            randomWord = "Five Guys";
-        }
-        if (randomInt == 3) {
-            randomWord = "Hiyashi";
-        }
-        if (randomInt == 4) {
-            randomWord = "Bobs Burgers";
-        }
-        if (randomInt == 5) {
-            randomWord = "McAlisters";
-        }
-        if (randomInt == 6) {
-            randomWord = "Mojo Bowl";
-        }
-        if (randomInt == 7) {
-            randomWord = "Indian Place";
-        }
-        if (randomInt == 8) {
-            randomWord = "Rudy's";
-        }
-        if (randomInt == 9) {
-            randomWord = "Long John Silver's";
-        }
-        if (randomInt == 10) {
-            randomWord = "B-Dubbs";
-        }
-        if (randomInt == 11) {
-            randomWord = "Torchies";
-        }
-        if (randomInt == 12) {
-            randomWord = "Fuzzie's";
-        }
-        if (randomInt == 13) {
-            randomWord = "Picantes";
-        }
-        if (randomInt == 14) {
-            randomWord = "Lubbock Pancake House";
-        }
-        if (randomInt == 15) {
-            randomWord = "Jazz";
-        }
-        if (randomInt == 16) {
-            randomWord = "Thai Pepper";
-        }
-        if (randomInt == 17) {
-            randomWord = "I Love Pho";
-        }
-        if (randomInt == 18) {
-            randomWord = "Denny's";
-        }
-        if (randomInt == 19) {
-            randomWord = "Golden Chick";
-        }
-        if (randomInt == 20) {
-            randomWord = "Freebird's";
-        }
-        if (randomInt == 21) {
-            randomWord = "Canes";
-        }
-        if (randomInt == 22) {
-            randomWord = "One Guy's";
-        }
-        if (randomInt == 23) {
-            randomWord = "Steak and Shake";
-        }
-        if (randomInt == 24) {
-            randomWord = "What-a-Burger";
-        }
-        if (randomInt == 25) {
-            randomWord = "Chick fil a";
-        }
-        if (randomInt == 26) {
-            randomWord = "Rosa's";
-        }
-        if (randomInt == 27) {
-            randomWord = "Panda Express";
-        }
-        if (randomInt == 28) {
-            randomWord = "Domino's";
-        }
-        if (randomInt == 29) {
-            randomWord = "Spanky's";
-        }
-        if (randomInt == 30) {
-            randomWord = "Weinerschnitzel";
-        }
-        if (randomInt == 31) {
-            randomWord = "Hub City Grill";
-        }
-        if (randomInt == 32) {
-            randomWord = "Heff's Burgers";
-        }
-        if (randomInt == 0) {
-            randomWord = "Cotton Patch";
-        }
-
-
         LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         double longitude = location.getLongitude();
@@ -249,9 +148,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         String longi =Double.toString(longitude);
         String lat= Double.toString(latitude);
 
-String url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+lat+","+longi+"&radius=500&type=restaurant&key=AIzaSyBDf3cLEXwV77wvfihpvNbsnqDOixWD4Kc";
+String url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=";
+        url=url.concat(String.valueOf(lat));
+        url=url.concat(",");
+        url=url.concat(String.valueOf(longi));
+        url=url.concat("&radius=24140&type=restaurant&key=AIzaSyBDf3cLEXwV77wvfihpvNbsnqDOixWD4Kc");
+        //url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=33.58576431,-101.87939933&radius=500&type=restaurant&key=AIzaSyBDf3cLEXwV77wvfihpvNbsnqDOixWD4Kc";
         new Dtask().execute(url);
-         whatYouWant.setText("You want to go to " + randomWord+ " "+url);
+
 
         //guessCurrentPlace();
 
@@ -397,8 +301,21 @@ String url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?locatio
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
+            final JSONObject obj;
+            try {
+                obj = new JSONObject(result);
+                final JSONArray place = obj.getJSONArray("results");
+                final int n = place.length();
+                Random randomGenerator = new Random();
+                    final JSONObject choice = place.getJSONObject(randomGenerator.nextInt(n));
+                    whatYouWant.setText(choice.getString("name"));
+                    //System.out.println(choice.getString("opening_hours"));
 
-            weblist.setText(result);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+                weblist.setText(result);
 
 
         }

@@ -3,6 +3,7 @@ package com.example.marcordonez.whatshouldweeat;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.LocationListener;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,6 +17,9 @@ import android.Manifest;
 import android.location.LocationManager;
 import android.location.Location;
 import android.content.Context;
+import android.location.Criteria;
+import android.os.IBinder;
+import android.app.Service;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -89,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     TextView weblist;
     private GoogleApiClient mGoogleApiClient;
     private int PLACE_PICKER_REQUEST = 1;
+    String url="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,23 +143,264 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
         super.onStop();
     }
+    public class GPSTracker extends Service implements LocationListener {
 
+        private final Context mContext;
+
+        // flag for GPS status
+        boolean isGPSEnabled = false;
+
+        // flag for network status
+        boolean isNetworkEnabled = false;
+
+        // flag for GPS status
+        boolean canGetLocation = false;
+
+        Location location; // location
+        double latitude; // latitude
+        double longitude; // longitude
+
+        // The minimum distance to change Updates in meters
+        private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
+
+        // The minimum time between updates in milliseconds
+        private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // 1 minute
+
+        // Declaring a Location Manager
+        protected LocationManager locationManager;
+
+        public GPSTracker(Context context) {
+            this.mContext = context;
+            getLocation();
+        }
+
+        public Location getLocation() {
+            try {
+                locationManager = (LocationManager) mContext
+                        .getSystemService(LOCATION_SERVICE);
+
+                // getting GPS status
+                isGPSEnabled = locationManager
+                        .isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+                // getting network status
+                isNetworkEnabled = locationManager
+                        .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+                if (!isGPSEnabled && !isNetworkEnabled) {
+                    // no network provider is enabled
+                } else {
+                    this.canGetLocation = true;
+                    // First get location from Network Provider
+                    if (isNetworkEnabled) {
+                        locationManager.requestLocationUpdates(
+                                LocationManager.NETWORK_PROVIDER,
+                                MIN_TIME_BW_UPDATES,
+                                MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                        Log.d("Network", "Network");
+                        if (locationManager != null) {
+                            location = locationManager
+                                    .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                            if (location != null) {
+                                latitude = location.getLatitude();
+                                longitude = location.getLongitude();
+                            }
+                        }
+                    }
+                    // if GPS Enabled get lat/long using GPS Services
+                    if (isGPSEnabled) {
+                        if (location == null) {
+                            locationManager.requestLocationUpdates(
+                                    LocationManager.GPS_PROVIDER,
+                                    MIN_TIME_BW_UPDATES,
+                                    MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                            Log.d("GPS Enabled", "GPS Enabled");
+                            if (locationManager != null) {
+                                location = locationManager
+                                        .getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                                if (location != null) {
+                                    latitude = location.getLatitude();
+                                    longitude = location.getLongitude();
+                                }
+                            }
+                        }
+                    }
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return location;
+        }
+
+        /**
+         * Stop using GPS listener
+         * Calling this function will stop using GPS in your app
+         * */
+        public void stopUsingGPS(){
+            if(locationManager != null){
+                locationManager.removeUpdates(GPSTracker.this);
+            }
+        }
+
+        /**
+         * Function to get latitude
+         * */
+        public double getLatitude(){
+            if(location != null){
+                latitude = location.getLatitude();
+            }
+
+            // return latitude
+            return latitude;
+        }
+
+        /**
+         * Function to get longitude
+         * */
+        public double getLongitude(){
+            if(location != null){
+                longitude = location.getLongitude();
+            }
+
+            // return longitude
+            return longitude;
+        }
+
+        /**
+         * Function to check GPS/wifi enabled
+         * @return boolean
+         * */
+        public boolean canGetLocation() {
+            return this.canGetLocation;
+        }
+
+
+
+        @Override
+        public void onLocationChanged(Location location) {
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+        }
+
+        @Override
+        public IBinder onBind(Intent arg0) {
+            return null;
+        }
+
+    }
     public void onClickFood(View view) {
+        Random randomGenerator = new Random();
+        int rndm=randomGenerator.nextInt(17);
+        String ftype = "";
+        if (rndm==1) {
+            ftype = "mexican";
+        }
+        else if (rndm==2) {
+            ftype = "italian";
+        }
+        else if (rndm==3) {
+            ftype = "pizza";
+        }
+        else if (rndm==4) {
+            ftype = "chinese";
+        }
+        else if (rndm==5) {
+            ftype = "sushi";
+        }
+        else if (rndm==6) {
+            ftype = "breakfast";
+        }
+        else if (rndm==7) {
+            ftype = "thai";
+        }
+        else if (rndm==8) {
+            ftype = "indian";
+        }
+        else if (rndm==9) {
+            ftype = "hamburger";
+        }
+        else if (rndm==10) {
+            ftype = "hotdog";
+        }
+        else if (rndm==11) {
+            ftype = "noodles";
+        }
+        else if (rndm==12) {
+            ftype = "bbq";
+        }
+        else if (rndm==13) {
+            ftype = "seafood";
+        }
+        else if (rndm==14) {
+            ftype = "steak";
+        }
+        else if (rndm==15) {
+            ftype = "wings";
+        }
+        else if (rndm==16) {
+            ftype = "vegan";
+        }
+        else if (rndm==17) {
+            ftype = "sandwitch";
+        }
+        else if (rndm==0) {
+            ftype = "cajun";
+        }
 
-        LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        double longitude = location.getLongitude();
-        double latitude = location.getLatitude();
-        String longi =Double.toString(longitude);
-        String lat= Double.toString(latitude);
+        weblist.setText(ftype);
 
-String url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=";
-        url=url.concat(String.valueOf(lat));
-        url=url.concat(",");
-        url=url.concat(String.valueOf(longi));
-        url=url.concat("&radius=24140&type=restaurant&key=AIzaSyBDf3cLEXwV77wvfihpvNbsnqDOixWD4Kc");
-        //url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=33.58576431,-101.87939933&radius=500&type=restaurant&key=AIzaSyBDf3cLEXwV77wvfihpvNbsnqDOixWD4Kc";
-        new Dtask().execute(url);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        //LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+
+       // Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        //double longitude = location.getLongitude();
+        //double latitude = location.getLatitude();
+        GPSTracker gps = new GPSTracker(this);
+        if(gps.canGetLocation()){
+            double latitude= gps.getLatitude(); // returns latitude
+            double longitude = gps.getLongitude(); // returns longitude
+            String longi =Double.toString(longitude);
+            String lat= Double.toString(latitude);
+
+            url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=";
+            url=url.concat(String.valueOf(lat));
+            url=url.concat(",");
+            url=url.concat(String.valueOf(longi));
+            url=url.concat("&rankby=distance&type=restaurant&key=AIzaSyBDf3cLEXwV77wvfihpvNbsnqDOixWD4Kc&opennow&keyword=");
+            url=url.concat(ftype);
+            //url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=33.58576431,-101.87939933&radius=500&type=restaurant&key=AIzaSyBDf3cLEXwV77wvfihpvNbsnqDOixWD4Kc";
+            new Dtask().execute(url);
+            //whatYouWant.setText(url);
+        }
+        else{
+            whatYouWant.setText("Could not access location");
+        }
+
 
 
         //guessCurrentPlace();
@@ -311,11 +557,12 @@ String url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?locatio
                     whatYouWant.setText(choice.getString("name"));
                     //System.out.println(choice.getString("opening_hours"));
 
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
-                weblist.setText(result);
+               // weblist.setText(result);
 
 
         }

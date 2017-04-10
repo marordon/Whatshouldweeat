@@ -44,6 +44,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     String url="";
     String longi;
     String lat;
+
+    //This is used to get the location
     public class GPSTracker extends Service implements LocationListener {
 
         private final Context mContext;
@@ -212,8 +214,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         if(gps.canGetLocation()) {
             double latitude = gps.getLatitude(); // returns latitude
             double longitude = gps.getLongitude(); // returns longitude
-            longi = Double.toString(longitude);
-            lat = Double.toString(latitude);
+            longi = Double.toString(longitude); // saves longitude
+            lat = Double.toString(latitude); // saves latitude
         }
         mGoogleApiClient = new GoogleApiClient
                 .Builder(this)
@@ -254,7 +256,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
         super.onStop();
     }
-
+//selects category
     public void onClickFood(View view) {
         Random randomGenerator = new Random();
         int rndm=randomGenerator.nextInt(17);
@@ -316,11 +318,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         weblist.setText(ftype);
 
-        //LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-
-       // Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        //double longitude = location.getLongitude();
-        //double latitude = location.getLatitude();
 if(lat == null || longi == null){
 
             url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=";
@@ -329,6 +326,8 @@ if(lat == null || longi == null){
             url=url.concat(String.valueOf(longi));
             url=url.concat("&rankby=distance&type=restaurant&key=AIzaSyBDf3cLEXwV77wvfihpvNbsnqDOixWD4Kc&opennow&keyword=");
             url=url.concat(ftype);
+
+             //used for testing
             //url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=33.58576431,-101.87939933&radius=500&type=restaurant&key=AIzaSyBDf3cLEXwV77wvfihpvNbsnqDOixWD4Kc";
             new Dtask().execute(url);
             //whatYouWant.setText(url);
@@ -360,7 +359,7 @@ if(lat == null || longi == null){
 
     }
 
-
+//used to process the results from api
     public class Dtask extends AsyncTask<String, String, String> {
 
 
@@ -384,7 +383,7 @@ if(lat == null || longi == null){
                 while ((line = reader.readLine()) != null) {
                     buffer.append(line);
                 }
-                //whatYouWant.setText(buffer.toString());
+
                 return buffer.toString();
 
             } catch (MalformedURLException e) {

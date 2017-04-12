@@ -32,11 +32,12 @@ import android.util.Log;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-
+import android.net.Uri;
 
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
     Button food;
+    Button mapit;
     TextView whatYouWant;
     TextView info;
     TextView weblist;
@@ -45,6 +46,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     String url="";
     String longi;
     String lat;
+    String maplat;
+    String maplon;
 
     //This is used to get the location
     public class GPSTracker extends Service implements LocationListener {
@@ -209,6 +212,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         food = (Button) findViewById(R.id.Food);
+        mapit = (Button) findViewById(R.id.Mapit);
         whatYouWant = (TextView) findViewById(R.id.WhatYouWant);
         weblist = (TextView) findViewById(R.id.weblist);
         info = (TextView) findViewById(R.id.info);
@@ -364,6 +368,15 @@ if(lat != null && longi != null){
 
     }
 
+
+    public void onClickMapit(View view) {
+        Uri gmmIntentUri = Uri.parse("google.navigation:q="+maplat+","+maplon);
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+        mapIntent.setPackage("com.google.android.apps.maps");
+        startActivity(mapIntent);
+
+    }
+
 //used to process the results from api
     public class Dtask extends AsyncTask<String, String, String> {
 
@@ -427,6 +440,9 @@ if(lat != null && longi != null){
 
                 whatYouWant.setText(choice.getString("name"));
                 info.setText(pick);
+                mapit.setVisibility(View.VISIBLE);
+                maplat= choice.getJSONObject("geometry").getJSONObject("location").getString("lat");
+                maplon= choice.getJSONObject("geometry").getJSONObject("location").getString("lng");
 
 
 

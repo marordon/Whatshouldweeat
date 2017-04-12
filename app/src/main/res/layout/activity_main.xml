@@ -24,10 +24,16 @@
         android:layout_centerHorizontal="true" />
 
     <TextView
+        android:id="@+id/info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/Food"
+        android:layout_alignParentStart="true" />
+
+    <TextView
         android:id="@+id/weblist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="test box"
-        android:layout_below="@+id/Food"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true" />
 </RelativeLayout>

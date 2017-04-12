@@ -38,6 +38,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
     Button food;
     TextView whatYouWant;
+    TextView info;
     TextView weblist;
     private GoogleApiClient mGoogleApiClient;
     private int PLACE_PICKER_REQUEST = 1;
@@ -210,6 +211,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         food = (Button) findViewById(R.id.Food);
         whatYouWant = (TextView) findViewById(R.id.WhatYouWant);
         weblist = (TextView) findViewById(R.id.weblist);
+        info = (TextView) findViewById(R.id.info);
         GPSTracker gps = new GPSTracker(this);
         if(gps.canGetLocation()) {
             double latitude = gps.getLatitude(); // returns latitude
@@ -217,6 +219,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             longi = Double.toString(longitude); // saves longitude
             lat = Double.toString(latitude); // saves latitude
         }
+        gps.stopUsingGPS();
+
+
         mGoogleApiClient = new GoogleApiClient
                 .Builder(this)
                 .enableAutoManage(this, 0, this)
@@ -318,8 +323,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         weblist.setText(ftype);
 
-if(lat == null || longi == null){
-
+if(lat != null && longi != null){
+    whatYouWant.setText("Loading...");
             url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=";
             url=url.concat(String.valueOf(lat));
             url=url.concat(",");
@@ -336,12 +341,11 @@ if(lat == null || longi == null){
 
     GPSTracker gps = new GPSTracker(this);
     if(gps.canGetLocation()) {
+        whatYouWant.setText("Loading...");
         double latitude = gps.getLatitude(); // returns latitude
         double longitude = gps.getLongitude(); // returns longitude
         longi = Double.toString(longitude);
         lat = Double.toString(latitude);
-        whatYouWant.setText("Loading...");
-
         url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=";
         url=url.concat(String.valueOf(lat));
         url=url.concat(",");
@@ -354,6 +358,7 @@ if(lat == null || longi == null){
     else{
         whatYouWant.setText("Could not access location");
     }
+    gps.stopUsingGPS();
         }
 
 
@@ -369,7 +374,6 @@ if(lat == null || longi == null){
             HttpURLConnection connection = null;
             BufferedReader reader = null;
             try {
-                System.out.println("in");
                 URL url = new URL(urls[0]);
                 connection = (HttpURLConnection) url.openConnection();
                 connection.connect();
@@ -416,8 +420,14 @@ if(lat == null || longi == null){
                 final int n = place.length();
                 Random randomGenerator = new Random();
                     final JSONObject choice = place.getJSONObject(randomGenerator.nextInt(n));
-                    whatYouWant.setText(choice.getString("name"));
-                    //System.out.println(choice.getString("opening_hours"));
+                String pick="\nRating: ";
+                pick=pick.concat(choice.getString("rating"));
+                pick=pick.concat("\nLocation: ");
+                pick=pick.concat(choice.getString("vicinity"));
+
+                whatYouWant.setText(choice.getString("name"));
+                info.setText(pick);
+
 
 
             } catch (JSONException e) {

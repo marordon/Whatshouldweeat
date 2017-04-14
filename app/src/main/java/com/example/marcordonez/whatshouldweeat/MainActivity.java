@@ -9,6 +9,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.TextView;
 import android.Manifest;
@@ -33,6 +34,7 @@ import com.google.android.gms.location.places.Places;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import android.net.Uri;
+import android.webkit.WebViewClient;
 
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
@@ -41,6 +43,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     TextView whatYouWant;
     TextView info;
     TextView weblist;
+    WebView webView;
+
     private GoogleApiClient mGoogleApiClient;
     private int PLACE_PICKER_REQUEST = 1;
     String url="";
@@ -216,6 +220,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         whatYouWant = (TextView) findViewById(R.id.WhatYouWant);
         weblist = (TextView) findViewById(R.id.weblist);
         info = (TextView) findViewById(R.id.info);
+        webView=(WebView) findViewById(R.id.webView);
         GPSTracker gps = new GPSTracker(this);
         if(gps.canGetLocation()) {
             double latitude = gps.getLatitude(); // returns latitude
@@ -443,8 +448,12 @@ if(lat != null && longi != null){
                 mapit.setVisibility(View.VISIBLE);
                 maplat= choice.getJSONObject("geometry").getJSONObject("location").getString("lat");
                 maplon= choice.getJSONObject("geometry").getJSONObject("location").getString("lng");
-
-
+                String im=choice.getJSONArray("photos").getJSONObject(randomGenerator.nextInt(choice.getJSONArray("photos").length())).getString("photo_reference");
+                String imgurl="https://maps.googleapis.com/maps/api/place/photo?maxheight=250&photoreference=" +
+                        im +
+                        "&key=AIzaSyBDf3cLEXwV77wvfihpvNbsnqDOixWD4Kc";
+                webView.setWebViewClient(new WebViewClient());
+                webView.loadUrl(imgurl);
 
             } catch (JSONException e) {
                 e.printStackTrace();

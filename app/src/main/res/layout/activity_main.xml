@@ -12,7 +12,10 @@
     <TextView
         android:id="@+id/WhatYouWant"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/Food"
+        android:textSize="24dp"
+        android:layout_below="@+id/webView" />
 
     <Button
         android:layout_width="wrap_content"
@@ -47,4 +50,12 @@
         android:layout_below="@+id/info"
         android:layout_toEndOf="@+id/Food"
         android:visibility="gone" />
+
+    <WebView
+        android:layout_width="wrap_content"
+        android:layout_height="800px"
+
+        android:id="@+id/webView"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>

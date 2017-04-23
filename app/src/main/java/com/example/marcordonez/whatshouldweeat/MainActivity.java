@@ -37,6 +37,7 @@ import android.net.Uri;
 import android.webkit.WebViewClient;
 
 
+
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
     Button food;
     Button mapit;
@@ -44,15 +45,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     TextView info;
     TextView weblist;
     WebView webView;
+    ChoiceStack picker;
 
     private GoogleApiClient mGoogleApiClient;
     private int PLACE_PICKER_REQUEST = 1;
     String url="";
-    String longi;
-    String lat;
+    double longi;
+    double lat;
     String maplat;
     String maplon;
-
+    double prevLg;
+    double prevLat;
+    int countdown;
     //This is used to get the location
     public class GPSTracker extends Service implements LocationListener {
 
@@ -75,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
 
         // The minimum time between updates in milliseconds
-        private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 5; // 1 minute
+        private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 5; // 5 minute
 
         // Declaring a Location Manager
         protected LocationManager locationManager;
@@ -211,6 +215,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
 
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -222,14 +227,43 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         info = (TextView) findViewById(R.id.info);
         webView=(WebView) findViewById(R.id.webView);
         GPSTracker gps = new GPSTracker(this);
-        if(gps.canGetLocation()) {
-            double latitude = gps.getLatitude(); // returns latitude
-            double longitude = gps.getLongitude(); // returns longitude
-            longi = Double.toString(longitude); // saves longitude
-            lat = Double.toString(latitude); // saves latitude
-        }
-        gps.stopUsingGPS();
+        food.setEnabled(false);
+        //get prevLat and PrevLg from database
 
+        if(gps.canGetLocation()) {
+            lat = gps.getLatitude(); // returns latitude
+            longi = gps.getLongitude(); // returns longitude
+            if (picker==null) {
+                picker = new ChoiceStack(5, prevLat, lat, prevLg, longi, url);
+            }
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            food.setEnabled(true);
+            gps.stopUsingGPS();
+        }
+        else {
+            whatYouWant.setText("Location Unavailable");
+            food.setEnabled(false);
+            while (!gps.canGetLocation()){
+
+            }
+            whatYouWant.setText("Location Detected");
+
+            lat = gps.getLatitude(); // returns latitude
+            longi = gps.getLongitude(); // returns longitude
+
+            picker =new ChoiceStack(5,prevLat,lat,prevLg,longi,url);
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            food.setEnabled(true);
+            gps.stopUsingGPS();
+        }
 
         mGoogleApiClient = new GoogleApiClient
                 .Builder(this)
@@ -261,6 +295,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         super.onStart();
         if (mGoogleApiClient != null)
             mGoogleApiClient.connect();
+        GPSTracker gps = new GPSTracker(this);
+        if(gps.canGetLocation()) {
+            lat = gps.getLatitude(); // returns latitude
+            longi = gps.getLongitude(); // returns longitude
+
+            picker =new ChoiceStack(5,prevLat,lat,prevLg,longi,url);
+
+
+            gps.stopUsingGPS();
+        }
     }
 
     @Override
@@ -272,103 +316,27 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 //selects category
     public void onClickFood(View view) {
-        Random randomGenerator = new Random();
-        int rndm=randomGenerator.nextInt(17);
-        String ftype = "";
-        if (rndm==1) {
-            ftype = "mexican";
+        if(picker.isEmpty()){
+            picker.refil(5,prevLat,lat,prevLg,longi,url);
+            whatYouWant.setText("Refilling");
         }
-        else if (rndm==2) {
-            ftype = "italian";
-        }
-        else if (rndm==3) {
-            ftype = "pizza";
-        }
-        else if (rndm==4) {
-            ftype = "chinese";
-        }
-        else if (rndm==5) {
-            ftype = "sushi";
-        }
-        else if (rndm==6) {
-            ftype = "breakfast";
-        }
-        else if (rndm==7) {
-            ftype = "thai";
-        }
-        else if (rndm==8) {
-            ftype = "indian";
-        }
-        else if (rndm==9) {
-            ftype = "hamburger";
-        }
-        else if (rndm==10) {
-            ftype = "hotdog";
-        }
-        else if (rndm==11) {
-            ftype = "noodles";
-        }
-        else if (rndm==12) {
-            ftype = "bbq";
-        }
-        else if (rndm==13) {
-            ftype = "seafood";
-        }
-        else if (rndm==14) {
-            ftype = "steak";
-        }
-        else if (rndm==15) {
-            ftype = "wings";
-        }
-        else if (rndm==16) {
-            ftype = "vegan";
-        }
-        else if (rndm==17) {
-            ftype = "sandwitch";
-        }
-        else if (rndm==0) {
-            ftype = "cajun";
-        }
+        Choice next = picker.pop(5,prevLat,lat,prevLg,longi,url);
 
-        weblist.setText(ftype);
+        String pick="\nRating: ";
+        pick=pick.concat(next.rateing);
+        pick=pick.concat("\nLocation: ");
+        pick=pick.concat(next.adress);
 
-if(lat != null && longi != null){
-    whatYouWant.setText("Loading...");
-            url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=";
-            url=url.concat(String.valueOf(lat));
-            url=url.concat(",");
-            url=url.concat(String.valueOf(longi));
-            url=url.concat("&rankby=distance&type=restaurant&key=AIzaSyBDf3cLEXwV77wvfihpvNbsnqDOixWD4Kc&opennow&keyword=");
-            url=url.concat(ftype);
+        whatYouWant.setText(next.name);
+        info.setText(pick);
+        mapit.setVisibility(View.VISIBLE);
+        maplat= next.lat;
+        maplon= next.lng;
+        webView.setVisibility(View.VISIBLE);
+        webView.setWebViewClient(new WebViewClient());
+        webView.loadUrl(next.imgurl);
+        //weblist.setText(next.ftype);
 
-             //used for testing
-            //url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=33.58576431,-101.87939933&radius=500&type=restaurant&key=AIzaSyBDf3cLEXwV77wvfihpvNbsnqDOixWD4Kc";
-            new Dtask().execute(url);
-            //whatYouWant.setText(url);
-        }
-        else{
-
-    GPSTracker gps = new GPSTracker(this);
-    if(gps.canGetLocation()) {
-        whatYouWant.setText("Loading...");
-        double latitude = gps.getLatitude(); // returns latitude
-        double longitude = gps.getLongitude(); // returns longitude
-        longi = Double.toString(longitude);
-        lat = Double.toString(latitude);
-        url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=";
-        url=url.concat(String.valueOf(lat));
-        url=url.concat(",");
-        url=url.concat(String.valueOf(longi));
-        url=url.concat("&rankby=distance&type=restaurant&key=AIzaSyBDf3cLEXwV77wvfihpvNbsnqDOixWD4Kc&opennow&keyword=");
-        url=url.concat(ftype);
-        //url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=33.58576431,-101.87939933&radius=500&type=restaurant&key=AIzaSyBDf3cLEXwV77wvfihpvNbsnqDOixWD4Kc";
-        new Dtask().execute(url);
-    }
-    else{
-        whatYouWant.setText("Could not access location");
-    }
-    gps.stopUsingGPS();
-        }
 
 
     }
@@ -383,91 +351,10 @@ if(lat != null && longi != null){
     }
 
 //used to process the results from api
-    public class Dtask extends AsyncTask<String, String, String> {
+@Override
+public void onConnected(@Nullable Bundle bundle) {
 
-
-        @Override
-        protected String doInBackground(String... urls) {
-
-            HttpURLConnection connection = null;
-            BufferedReader reader = null;
-            try {
-                URL url = new URL(urls[0]);
-                connection = (HttpURLConnection) url.openConnection();
-                connection.connect();
-
-                InputStream stream = connection.getInputStream();
-                reader = new BufferedReader(new InputStreamReader(stream));
-
-                StringBuffer buffer = new StringBuffer();
-
-                String line = "";
-                while ((line = reader.readLine()) != null) {
-                    buffer.append(line);
-                }
-
-                return buffer.toString();
-
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (connection != null) {
-                    connection.disconnect();
-                }
-                try {
-                    if (reader != null) {
-                        reader.close();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            return null;
-
-        }
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            final JSONObject obj;
-            try {
-                obj = new JSONObject(result);
-                final JSONArray place = obj.getJSONArray("results");
-                final int n = place.length();
-                Random randomGenerator = new Random();
-                    final JSONObject choice = place.getJSONObject(randomGenerator.nextInt(n));
-                String pick="\nRating: ";
-                pick=pick.concat(choice.getString("rating"));
-                pick=pick.concat("\nLocation: ");
-                pick=pick.concat(choice.getString("vicinity"));
-
-                whatYouWant.setText(choice.getString("name"));
-                info.setText(pick);
-                mapit.setVisibility(View.VISIBLE);
-                maplat= choice.getJSONObject("geometry").getJSONObject("location").getString("lat");
-                maplon= choice.getJSONObject("geometry").getJSONObject("location").getString("lng");
-                String im=choice.getJSONArray("photos").getJSONObject(randomGenerator.nextInt(choice.getJSONArray("photos").length())).getString("photo_reference");
-                String imgurl="https://maps.googleapis.com/maps/api/place/photo?maxheight=250&photoreference=" +
-                        im +
-                        "&key=AIzaSyBDf3cLEXwV77wvfihpvNbsnqDOixWD4Kc";
-                webView.setWebViewClient(new WebViewClient());
-                webView.loadUrl(imgurl);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-               // weblist.setText(result);
-
-
-        }
-    }
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-
-    }
+}
 
     @Override
     public void onConnectionSuspended(int i) {

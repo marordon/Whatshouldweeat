@@ -31,13 +31,13 @@ public class ChoiceStack {
         stackArray = new Choice[s*10];
         top = -1;
     }
-    public ChoiceStack(int s,double prevLat, double lat,double prevLg, double longi, String url) {
+    public ChoiceStack(int s,double prevLat, double lat,double prevLg, double longi) {
         stackArray = new Choice[s*10];
         top = -1;
-        refil(s,prevLat,lat,prevLg,longi,url);
+        refil(s,prevLat,lat,prevLg,longi);
 
     }
-    public void refil(int s,double prevLat, double lat,double prevLg, double longi, String url){
+    public void refil(int s,double prevLat, double lat,double prevLg, double longi){
         //these are temporary variables whos values will come from the database
         int totalSelections=684;
         //number being multiplied by 100 is number of time the place was "choosen"
@@ -108,7 +108,7 @@ public class ChoiceStack {
                 else {
                     ftype = "fish";
                 }
-                url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=";
+                String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=";
                 url = url.concat(String.valueOf(Double.toString(lat)));
                 url = url.concat(",");
                 url = url.concat(String.valueOf(Double.toString(longi)));
@@ -128,12 +128,12 @@ public class ChoiceStack {
     public void push(Choice j) {
         stackArray[++top] = j;
     }
-    public Choice pop(int s,double prevLat, double lat,double prevLg, double longi, String url) {
+    public Choice pop(int s,double prevLat, double lat,double prevLg, double longi) {
         if (top<=1){
             //temporary variable till database is linked in
             boolean dataIsEmpty=true;
             if(dataIsEmpty){
-                refil(s,prevLat,lat,prevLg,longi,url);
+                refil(s,prevLat,lat,prevLg,longi);
             }else{
                 //refill with entrys in database
             }

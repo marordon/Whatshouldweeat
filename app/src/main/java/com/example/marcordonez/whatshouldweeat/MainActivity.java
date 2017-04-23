@@ -50,7 +50,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     private GoogleApiClient mGoogleApiClient;
     private int PLACE_PICKER_REQUEST = 1;
-    String url="";
     double longi;
     double lat;
     String maplat;
@@ -238,7 +237,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             lat = gps.getLatitude(); // returns latitude
             longi = gps.getLongitude(); // returns longitude
             if (picker==null) {
-                picker = new ChoiceStack(5, prevLat, lat, prevLg, longi, url);
+                picker = new ChoiceStack(5, prevLat, lat, prevLg, longi);
             }
             try {
                 Thread.sleep(3000);
@@ -260,7 +259,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             lat = gps.getLatitude(); // returns latitude
             longi = gps.getLongitude(); // returns longitude
 
-            picker =new ChoiceStack(5,prevLat,lat,prevLg,longi,url);
+            picker =new ChoiceStack(5,prevLat,lat,prevLg,longi);
             try {
                 Thread.sleep(3000);
             } catch (InterruptedException e) {
@@ -307,7 +306,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             lat = gps.getLatitude(); // returns latitude
             longi = gps.getLongitude(); // returns longitude
 
-            picker =new ChoiceStack(5,prevLat,lat,prevLg,longi,url);
+            picker =new ChoiceStack(5,prevLat,lat,prevLg,longi);
 
 
             gps.stopUsingGPS();
@@ -331,14 +330,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             dialog.setInverseBackgroundForced(false);
             dialog.show();
 
-            picker.refil(5,prevLat,lat,prevLg,longi,url);
+            picker.refil(5,prevLat,lat,prevLg,longi);
            while (picker.isEmpty()){
 
            }
 
             dialog.hide();
         }
-        Choice next = picker.pop(5,prevLat,lat,prevLg,longi,url);
+        Choice next = picker.pop(5,prevLat,lat,prevLg,longi);
 
         String pick="\nRating: ";
         pick=pick.concat(next.rateing);

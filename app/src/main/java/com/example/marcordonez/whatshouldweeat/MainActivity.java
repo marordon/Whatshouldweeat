@@ -1,4 +1,5 @@
 package com.example.marcordonez.whatshouldweeat;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationListener;
@@ -228,6 +229,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         webView=(WebView) findViewById(R.id.webView);
         GPSTracker gps = new GPSTracker(this);
         food.setEnabled(false);
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+
+
         //get prevLat and PrevLg from database
 
         if(gps.canGetLocation()) {
@@ -241,6 +245,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
             food.setEnabled(true);
             gps.stopUsingGPS();
         }
@@ -261,6 +266,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
             food.setEnabled(true);
             gps.stopUsingGPS();
         }
@@ -283,7 +289,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
 
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+
 
             //whatYouWant.setText( "nope");
 
@@ -295,6 +301,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         super.onStart();
         if (mGoogleApiClient != null)
             mGoogleApiClient.connect();
+
         GPSTracker gps = new GPSTracker(this);
         if(gps.canGetLocation()) {
             lat = gps.getLatitude(); // returns latitude
@@ -305,6 +312,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
             gps.stopUsingGPS();
         }
+
     }
 
     @Override
@@ -317,8 +325,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 //selects category
     public void onClickFood(View view) {
         if(picker.isEmpty()){
+            ProgressDialog dialog=new ProgressDialog(this);
+            dialog.setMessage("Loading");
+            dialog.setCancelable(true);
+            dialog.setInverseBackgroundForced(false);
+            dialog.show();
+
             picker.refil(5,prevLat,lat,prevLg,longi,url);
-            whatYouWant.setText("Refilling");
+           while (picker.isEmpty()){
+
+           }
+
+            dialog.hide();
         }
         Choice next = picker.pop(5,prevLat,lat,prevLg,longi,url);
 

@@ -200,38 +200,46 @@ public class ChoiceStack {
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             final JSONObject obj;
+
             try {
                 obj = new JSONObject(result);
-                final JSONArray place = obj.getJSONArray("results");
-                final int n = place.length();
-                Random randomGenerator = new Random();
-                int ran=randomGenerator.nextInt(n);
-                final JSONObject choice = place.getJSONObject(ran);
-                for(int i=1; i<n; i++){
-                    if(i != ran){
-                        //insert into database
+                String test=obj.getString("status");
+                if(test.equals("OVER_QUERY_LIMIT")){
+                    Choice tmp = new Choice();
+                    tmp.name = "OVER QUERY LIMIT";
+                    push(tmp);
+                }else {
 
+                    final JSONArray place = obj.getJSONArray("results");
+                    final int n = place.length();
+                    Random randomGenerator = new Random();
+                    int ran = randomGenerator.nextInt(n);
+                    final JSONObject choice = place.getJSONObject(ran);
+                    for (int i = 1; i < n; i++) {
+                        if (i != ran) {
+                            //insert into database
+
+                        }
                     }
-                }
 
 
-                    Choice tmp= new Choice();
+                    Choice tmp = new Choice();
 
 
-                    tmp.name=choice.getString("name");
-                    tmp.adress=choice.getString("vicinity");
-                    tmp.lat=choice.getJSONObject("geometry").getJSONObject("location").getString("lat");
-                    tmp.lng=choice.getJSONObject("geometry").getJSONObject("location").getString("lng");
-                    tmp.rateing=choice.getString("rating");
-                    String im=choice.getJSONArray("photos").getJSONObject(randomGenerator.nextInt(choice.getJSONArray("photos").length())).getString("photo_reference");
-                    tmp.imgurl="https://maps.googleapis.com/maps/api/place/photo?maxheight=250&photoreference=" +
+                    tmp.name = choice.getString("name");
+                    tmp.adress = choice.getString("vicinity");
+                    tmp.lat = choice.getJSONObject("geometry").getJSONObject("location").getString("lat");
+                    tmp.lng = choice.getJSONObject("geometry").getJSONObject("location").getString("lng");
+                    tmp.rateing = choice.getString("rating");
+                    String im = choice.getJSONArray("photos").getJSONObject(randomGenerator.nextInt(choice.getJSONArray("photos").length())).getString("photo_reference");
+                    tmp.imgurl = "https://maps.googleapis.com/maps/api/place/photo?maxheight=250&photoreference=" +
                             im +
                             "&key=AIzaSyBDf3cLEXwV77wvfihpvNbsnqDOixWD4Kc";
                     //tmp.ftype = url.substring(url.lastIndexOf("=")+1);
 
-                        push(tmp);
+                    push(tmp);
 
-
+                }
 
 
             } catch (JSONException e) {

@@ -321,7 +321,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
         super.onStop();
     }
-//selects category
+    //selects category
     public void onClickFood(View view) {
         if(picker.isEmpty()){
             ProgressDialog dialog=new ProgressDialog(this);

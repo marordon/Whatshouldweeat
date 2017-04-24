@@ -45,7 +45,7 @@ public class ChoiceStack {
         int ital=mex+(46*100)/totalSelections;
         int pizza=ital+(46*100)/totalSelections;
         int chinese=pizza+(36*100)/totalSelections;
-        int sushi=chinese+(20*100)/totalSelections;;
+        int sushi=chinese+(20*100)/totalSelections;
         int bfast=sushi+(46*100)/totalSelections;
         int thai=bfast+(36*100)/totalSelections;
         int indian=thai+(36*100)/totalSelections;

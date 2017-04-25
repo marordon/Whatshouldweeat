@@ -26,14 +26,19 @@ public class ChoiceStack {
     private int maxSize;
     private Choice[] stackArray;
     private int top;
-
+    private String[] fstack;
+    private int ftop;
     public ChoiceStack(int s) {
         stackArray = new Choice[s*10];
         top = -1;
+        fstack = new String[s*10];
+        ftop = -1;
     }
     public ChoiceStack(int s,double prevLat, double lat,double prevLg, double longi) {
         stackArray = new Choice[s*10];
         top = -1;
+        fstack = new String[s*10];
+        ftop = -1;
         refil(s,prevLat,lat,prevLg,longi);
 
     }
@@ -68,41 +73,41 @@ public class ChoiceStack {
                 Random randomGenerator = new Random();
                 int rndm = randomGenerator.nextInt(100);
                 String ftype = "";
-                if (rndm <=0 && rndm >=mex) {
+                if (rndm >=0 && rndm <=mex) {
                     ftype = "mexican";
-                } else if (rndm <=mex && rndm >=ital) {
+                } else if (rndm <=ital) {
                     ftype = "italian";
-                } else if (rndm <=ital && rndm >=pizza) {
+                } else if (rndm <=pizza) {
                     ftype = "pizza";
-                } else if (rndm <=pizza && rndm >=chinese) {
+                } else if (rndm <=chinese) {
                     ftype = "chinese";
-                } else if (rndm <=chinese && rndm >=sushi) {
+                } else if (rndm <=sushi) {
                     ftype = "sushi";
-                } else if (rndm <=sushi && rndm >=bfast) {
+                } else if (rndm <=bfast) {
                     ftype = "breakfast";
-                } else if (rndm <=bfast && rndm >=thai) {
+                } else if (rndm <=thai) {
                     ftype = "thai";
-                } else if (rndm <=thai && rndm >=indian) {
+                } else if (rndm <=indian) {
                     ftype = "indian";
-                } else if (rndm <=indian && rndm >=burger) {
+                } else if (rndm <=burger) {
                     ftype = "hamburger";
-                } else if (rndm <=burger && rndm >=hdog) {
+                } else if (rndm <=hdog) {
                     ftype = "hotdog";
-                } else if (rndm <=hdog && rndm >=noodles) {
+                } else if (rndm <=noodles) {
                     ftype = "noodles";
-                } else if (rndm <=noodles && rndm >=bbq) {
+                } else if (rndm <=bbq) {
                     ftype = "bbq";
-                } else if (rndm <=bbq && rndm >=seafood) {
+                } else if (rndm <=seafood) {
                     ftype = "seafood";
-                } else if (rndm <=seafood && rndm >=steak) {
+                } else if (rndm <=steak) {
                     ftype = "steak";
-                } else if (rndm <=steak && rndm >=wings) {
+                } else if (rndm <=wings) {
                     ftype = "wings";
-                } else if (rndm <=wings && rndm >=vegan) {
+                } else if (rndm <=vegan) {
                     ftype = "vegan";
-                } else if (rndm <=vegan && rndm >=sandwitch) {
+                } else if (rndm <=sandwitch) {
                     ftype = "sandwitch";
-                } else if (rndm <=sandwitch && rndm >=cajun) {
+                } else if (rndm <=cajun) {
                     ftype = "cajun";
                 }
                 else {
@@ -115,7 +120,9 @@ public class ChoiceStack {
                 url = url.concat("&rankby=distance&type=restaurant&key=AIzaSyBDf3cLEXwV77wvfihpvNbsnqDOixWD4Kc&opennow&keyword=");
                 url = url.concat(ftype);
                 //url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=33.58576431,-101.87939933&radius=500&type=restaurant&key=AIzaSyBDf3cLEXwV77wvfihpvNbsnqDOixWD4Kc";
-
+                //
+                //ftype currently is not saved, Im not sure how to get this variable into Dtask.
+                // fpush(ftype);
                 new Dtask().execute(url);
             }
         } else {
@@ -127,6 +134,12 @@ public class ChoiceStack {
     }
     public void push(Choice j) {
         stackArray[++top] = j;
+    }
+    public void fpush(String j) {
+        fstack[++ftop] = j;
+    }
+    public String fpop() {
+        return fstack[ftop--];
     }
     public Choice pop(int s,double prevLat, double lat,double prevLg, double longi) {
         if (top<=1){
@@ -236,7 +249,7 @@ public class ChoiceStack {
                             im +
                             "&key=AIzaSyBDf3cLEXwV77wvfihpvNbsnqDOixWD4Kc";
                     //tmp.ftype = url.substring(url.lastIndexOf("=")+1);
-
+                    tmp.ftype=(fpop());
                     push(tmp);
 
                 }

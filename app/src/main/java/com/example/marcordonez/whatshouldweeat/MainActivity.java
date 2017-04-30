@@ -331,9 +331,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             dialog.show();
 
             picker.refil(5,prevLat,lat,prevLg,longi);
-           while (picker.isEmpty()){
+          // while (picker.isEmpty()){
 
-           }
+          // }
 
             dialog.hide();
         }

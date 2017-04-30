@@ -26,19 +26,14 @@ public class ChoiceStack {
     private int maxSize;
     private Choice[] stackArray;
     private int top;
-    private String[] fstack;
-    private int ftop;
     public ChoiceStack(int s) {
         stackArray = new Choice[s*10];
         top = -1;
-        fstack = new String[s*10];
-        ftop = -1;
+
     }
     public ChoiceStack(int s,double prevLat, double lat,double prevLg, double longi) {
         stackArray = new Choice[s*10];
         top = -1;
-        fstack = new String[s*10];
-        ftop = -1;
         refil(s,prevLat,lat,prevLg,longi);
 
     }
@@ -121,7 +116,7 @@ public class ChoiceStack {
                 url = url.concat(ftype);
                 //url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=33.58576431,-101.87939933&radius=500&type=restaurant&key=AIzaSyBDf3cLEXwV77wvfihpvNbsnqDOixWD4Kc";
                 //
-                //ftype currently is not saved, Im not sure how to get this variable into Dtask.
+                //ftype currently is not saved, Im not sure how to get this variable into D
                 // fpush(ftype);
                 new Dtask().execute(url);
             }
@@ -134,12 +129,6 @@ public class ChoiceStack {
     }
     public void push(Choice j) {
         stackArray[++top] = j;
-    }
-    public void fpush(String j) {
-        fstack[++ftop] = j;
-    }
-    public String fpop() {
-        return fstack[ftop--];
     }
     public Choice pop(int s,double prevLat, double lat,double prevLg, double longi) {
         if (top<=1){
@@ -249,7 +238,7 @@ public class ChoiceStack {
                             im +
                             "&key=AIzaSyBDf3cLEXwV77wvfihpvNbsnqDOixWD4Kc";
                     //tmp.ftype = url.substring(url.lastIndexOf("=")+1);
-                    tmp.ftype=(fpop());
+                    //tmp.ftype=(fpop());
                     push(tmp);
 
                 }

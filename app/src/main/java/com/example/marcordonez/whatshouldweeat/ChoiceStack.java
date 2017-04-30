@@ -139,7 +139,8 @@ public class ChoiceStack {
             }else{
                 //refill with entrys in database
             }
-
+            Choice temp=new Choice();
+        return temp;
         }
         return stackArray[top--];
     }
@@ -175,8 +176,8 @@ public class ChoiceStack {
                 while ((line = reader.readLine()) != null) {
                     buffer.append(line);
                 }
-
-                return buffer.toString();
+String temp = urls[0]+" "+buffer.toString();
+                return temp;
 
             } catch (MalformedURLException e) {
                 e.printStackTrace();
@@ -202,9 +203,12 @@ public class ChoiceStack {
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             final JSONObject obj;
-
+            String[] parts = result.split(" ", 2);
+            String ftype = parts[0];
+            String urlRes = parts[1];
+            ftype=ftype.substring(ftype.lastIndexOf("=")+1);
             try {
-                obj = new JSONObject(result);
+                obj = new JSONObject(urlRes);
                 String test=obj.getString("status");
                 if(test.equals("OVER_QUERY_LIMIT")){
                     Choice tmp = new Choice();
@@ -215,7 +219,7 @@ public class ChoiceStack {
                     final JSONArray place = obj.getJSONArray("results");
                     final int n = place.length();
                     Random randomGenerator = new Random();
-                    int ran = randomGenerator.nextInt(n);
+                    int ran = randomGenerator.nextInt(n<=0?1:n);
                     final JSONObject choice = place.getJSONObject(ran);
                     for (int i = 1; i < n; i++) {
                         if (i != ran) {
@@ -237,8 +241,9 @@ public class ChoiceStack {
                     tmp.imgurl = "https://maps.googleapis.com/maps/api/place/photo?maxheight=250&photoreference=" +
                             im +
                             "&key=AIzaSyBDf3cLEXwV77wvfihpvNbsnqDOixWD4Kc";
-                    //tmp.ftype = url.substring(url.lastIndexOf("=")+1);
-                    //tmp.ftype=(fpop());
+
+                    tmp.ftype = ftype;
+                    //tmp.ftype=part1;
                     push(tmp);
 
                 }

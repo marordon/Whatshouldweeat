@@ -54,8 +54,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     double lat;
     String maplat;
     String maplon;
-    double prevLg;
-    double prevLat;
+    double prevLg=-0.1;
+    double prevLat=-0.1;
     int countdown;
     //This is used to get the location
     public class GPSTracker extends Service implements LocationListener {
@@ -352,7 +352,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         webView.setVisibility(View.VISIBLE);
         webView.setWebViewClient(new WebViewClient());
         webView.loadUrl(next.imgurl);
-        //weblist.setText(next.ftype);
+        weblist.setText(next.ftype);
 
 
 

@@ -3,7 +3,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationListener;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -19,17 +18,6 @@ import android.location.Location;
 import android.content.Context;
 import android.os.IBinder;
 import android.app.Service;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONArray;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Random;
 import android.util.Log;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.common.ConnectionResult;
@@ -340,9 +328,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         Choice next = picker.pop(5,prevLat,lat,prevLg,longi);
 
         String pick="\nRating: ";
-        pick=pick.concat(next.rateing);
+        pick=pick.concat(next.rating);
         pick=pick.concat("\nLocation: ");
-        pick=pick.concat(next.adress);
+        pick=pick.concat(next.address);
 
         whatYouWant.setText(next.name);
         info.setText(pick);

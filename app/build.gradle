@@ -6,8 +6,8 @@ android {
 
     defaultConfig {
         applicationId "com.example.marcordonez.whatshouldweeat"
-        minSdkVersion 22
-        targetSdkVersion 24
+        minSdkVersion 15
+        targetSdkVersion 19
         versionCode 1
         versionName "1.0"
         multiDexEnabled true

@@ -1,7 +1,5 @@
 package com.example.marcordonez.whatshouldweeat;
 
-import java.util.Random;
-
 /**
  * Created by marcordonez on 4/22/17.
  */
@@ -10,8 +8,8 @@ public class Choice {
     String name;
     String lat;
     String lng;
-    String rateing;
-    String adress;
+    String rating;
+    String address;
     String imgurl;
     String ftype;
 
@@ -20,8 +18,8 @@ public class Choice {
         name="unavailable";
         lat="unavailable";
         lng="unavailable";
-        rateing="unavailable";
-        adress="unavailable";
+        rating ="unavailable";
+        address ="unavailable";
         imgurl="unavailable";
         ftype="unavailable";
 
@@ -52,20 +50,20 @@ public class Choice {
         this.lng = lng;
     }
 
-    public String getRateing() {
-        return rateing;
+    public String getRating() {
+        return rating;
     }
 
-    public void setRateing(String rateing) {
-        this.rateing = rateing;
+    public void setRating(String rating) {
+        this.rating = rating;
     }
 
-    public String getAdress() {
-        return adress;
+    public String getAddress() {
+        return address;
     }
 
-    public void setAdress(String adress) {
-        this.adress = adress;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getImgurl() {

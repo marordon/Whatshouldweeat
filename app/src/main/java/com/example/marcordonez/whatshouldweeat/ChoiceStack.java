@@ -1,9 +1,6 @@
 package com.example.marcordonez.whatshouldweeat;
 
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,7 +10,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Random;
-import com.google.android.gms.common.ConnectionResult;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -176,7 +172,7 @@ public class ChoiceStack {
                 while ((line = reader.readLine()) != null) {
                     buffer.append(line);
                 }
-String temp = urls[0]+" "+buffer.toString();
+                String temp = urls[0]+" "+buffer.toString();
                 return temp;
 
             } catch (MalformedURLException e) {
@@ -233,10 +229,10 @@ String temp = urls[0]+" "+buffer.toString();
 
 
                     tmp.name = choice.getString("name");
-                    tmp.adress = choice.getString("vicinity");
+                    tmp.address = choice.getString("vicinity");
                     tmp.lat = choice.getJSONObject("geometry").getJSONObject("location").getString("lat");
                     tmp.lng = choice.getJSONObject("geometry").getJSONObject("location").getString("lng");
-                    tmp.rateing = choice.getString("rating");
+                    tmp.rating = choice.getString("rating");
                     String im = choice.getJSONArray("photos").getJSONObject(randomGenerator.nextInt(choice.getJSONArray("photos").length())).getString("photo_reference");
                     tmp.imgurl = "https://maps.googleapis.com/maps/api/place/photo?maxheight=250&photoreference=" +
                             im +

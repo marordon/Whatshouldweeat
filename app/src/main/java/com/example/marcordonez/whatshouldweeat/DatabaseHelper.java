@@ -17,6 +17,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private final String PREF_TABLE_NAME = "PREF_TABLE";
     private final String CHOICE_TABLE_NAME = "CHOICE_TABLE";
 
+    public enum FType{
+        MEXICAN, ITALIAN, PIZZA,
+        CHINESE, SUSHI, BREAKFAST,
+        THAI, INDIAN, HAMBURGER,
+        HOTDOG, NOODLES, BBQ,
+        SEAFOOD, STEAK, WINGS,
+        VEGAN, SANDWICH, CAJUN,
+        FISH
+    }
+
     // Choice Table cols
     private class CHOICE_COLS{
         /**
@@ -168,9 +178,72 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         r.setImgurl(c.getString(c.getColumnIndexOrThrow(CHOICE_COLS.IMGURL)));
         r.setFtype(c.getString(c.getColumnIndexOrThrow(CHOICE_COLS.FTYPE)));
 
+        return r;
+    }
 
+    public int getNumVisitedForCategory(FType t){
+        int id = 0;
+        switch(t){
+            case MEXICAN:
+                id = 1;
+                break;
+            case ITALIAN:
+                id = 2;
+                break;
+            case PIZZA:
+                id = 3;
+                break;
+            case CHINESE:
+                id = 4;
+                break;
+            case SUSHI:
+                id = 5;
+                break;
+            case BREAKFAST:
+                id = 6;
+                break;
+            case THAI:
+                id = 7;
+                break;
+            case INDIAN:
+                id = 8;
+                break;
+            case HAMBURGER:
+                id = 9;
+                break;
+            case HOTDOG:
+                id = 10;
+                break;
+            case NOODLES:
+                id = 11;
+                break;
+            case BBQ:
+                id = 12;
+                break;
+            case SEAFOOD:
+                id = 13;
+                break;
+            case STEAK:
+                id = 14;
+                break;
+            case WINGS:
+                id = 15;
+                break;
+            case VEGAN:
+                id = 16;
+                break;
+            case SANDWICH:
+                id = 17;
+                break;
+            case CAJUN:
+                id = 18;
+                break;
+            case FISH:
+                id = 19;
+                break;
+        }
 
-        return null;
+        return 0;
     }
 
 

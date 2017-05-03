@@ -15,6 +15,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static com.example.marcordonez.whatshouldweeat.DatabaseHelper.FType.*;
+
 /**
  * Created by marcordonez on 4/21/17.
  */
@@ -63,53 +65,53 @@ public class ChoiceStack {
 
                 Random randomGenerator = new Random();
                 int rndm = randomGenerator.nextInt(100);
-                String ftype = "";
+                DatabaseHelper.FType ftype;
                 if (rndm >=0 && rndm <=mex) {
-                    ftype = "mexican";
+                    ftype = MEXICAN;
                 } else if (rndm <=ital) {
-                    ftype = "italian";
+                    ftype = ITALIAN;
                 } else if (rndm <=pizza) {
-                    ftype = "pizza";
+                    ftype = PIZZA;
                 } else if (rndm <=chinese) {
-                    ftype = "chinese";
+                    ftype = CHINESE;
                 } else if (rndm <=sushi) {
-                    ftype = "sushi";
+                    ftype = SUSHI;
                 } else if (rndm <=bfast) {
-                    ftype = "breakfast";
+                    ftype = BREAKFAST;
                 } else if (rndm <=thai) {
-                    ftype = "thai";
+                    ftype = THAI;
                 } else if (rndm <=indian) {
-                    ftype = "indian";
+                    ftype = INDIAN;
                 } else if (rndm <=burger) {
-                    ftype = "hamburger";
+                    ftype = HAMBURGER;
                 } else if (rndm <=hdog) {
-                    ftype = "hotdog";
+                    ftype = HOTDOG;
                 } else if (rndm <=noodles) {
-                    ftype = "noodles";
+                    ftype = NOODLES;
                 } else if (rndm <=bbq) {
-                    ftype = "bbq";
+                    ftype = BBQ;
                 } else if (rndm <=seafood) {
-                    ftype = "seafood";
+                    ftype = SEAFOOD;
                 } else if (rndm <=steak) {
-                    ftype = "steak";
+                    ftype = STEAK;
                 } else if (rndm <=wings) {
-                    ftype = "wings";
+                    ftype = WINGS;
                 } else if (rndm <=vegan) {
-                    ftype = "vegan";
+                    ftype = VEGAN;
                 } else if (rndm <=sandwitch) {
-                    ftype = "sandwitch";
+                    ftype = SANDWICH;
                 } else if (rndm <=cajun) {
-                    ftype = "cajun";
+                    ftype = CAJUN;
                 }
                 else {
-                    ftype = "fish";
+                    ftype = FISH;
                 }
                 String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=";
                 url = url.concat(String.valueOf(Double.toString(lat)));
                 url = url.concat(",");
                 url = url.concat(String.valueOf(Double.toString(longi)));
                 url = url.concat("&rankby=distance&type=restaurant&key=AIzaSyBDf3cLEXwV77wvfihpvNbsnqDOixWD4Kc&opennow&keyword=");
-                url = url.concat(ftype);
+                url = url.concat(ftype.getDisplayName());
                 //url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=33.58576431,-101.87939933&radius=500&type=restaurant&key=AIzaSyBDf3cLEXwV77wvfihpvNbsnqDOixWD4Kc";
                 //
                 //ftype currently is not saved, Im not sure how to get this variable into D

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.hardware.camera2.params.StreamConfigurationMap;
 
 /**
  * Created by Ben on 04/23/17.
@@ -18,13 +19,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private final String CHOICE_TABLE_NAME = "CHOICE_TABLE";
 
     public enum FType{
-        MEXICAN, ITALIAN, PIZZA,
-        CHINESE, SUSHI, BREAKFAST,
-        THAI, INDIAN, HAMBURGER,
-        HOTDOG, NOODLES, BBQ,
-        SEAFOOD, STEAK, WINGS,
-        VEGAN, SANDWICH, CAJUN,
-        FISH
+        MEXICAN(0, "mexican"), ITALIAN(20, "italian"), PIZZA(40, "pizza"),
+        CHINESE(60, "chinese"), SUSHI(80, "sushi"), BREAKFAST(100, "breakfast"),
+        THAI(120, "thai"), INDIAN(140, "indian"), HAMBURGER(160, "hamburger"),
+        HOTDOG(180, "hotdog"), NOODLES(200, "noodles"), BBQ(220, "bbq"),
+        SEAFOOD(240, "seafood"), STEAK(260, "steak"), WINGS(280, "wings"),
+        VEGAN(300, "vegan"), SANDWICH(320, "sandwich"), CAJUN(340, "cajun"),
+        FISH(360, "fish"), OTHER(380, "other");
+
+        int startIndex;
+        String displayName;
+
+        FType(int startIndex, String displayName){
+            this.startIndex = startIndex;
+            this.displayName = displayName;
+        }
+
+        public int getStartIndex() {
+            return startIndex;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
     }
 
     // Choice Table cols
@@ -150,6 +167,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(DROP_PREF_TABLE);
     }
 
+    public void addChoice(Choice choice){
+        // Calculate appropriate index to add
+        if(choice != null){
+            FType type = choice.getFtype();
+        }
+    }
+
     public Choice getChoice(int withID){
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -243,7 +267,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 break;
         }
 
-        return 0;
+        String[] pro = {PREF_COLS.ID, PREF_COLS.NAME, PREF_COLS.VALUE};
+        String selection = CHOICE_COLS.ID + " = ?";
+        String[] selArgs = {String.valueOf(id)};
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor c = db.query(PREF_TABLE_NAME,
+                pro,
+                selection,
+                selArgs,
+                null,
+                null,
+                null);
+
+        if (c.moveToFirst()) {
+            return c.getInt(c.getColumnIndexOrThrow(PREF_COLS.VALUE));
+        } else {
+            return -1;
+        }
     }
 
 

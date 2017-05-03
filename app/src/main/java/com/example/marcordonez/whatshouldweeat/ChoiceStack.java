@@ -114,8 +114,7 @@ public class ChoiceStack {
                 url = url.concat(ftype.getDisplayName());
                 //url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=33.58576431,-101.87939933&radius=500&type=restaurant&key=AIzaSyBDf3cLEXwV77wvfihpvNbsnqDOixWD4Kc";
                 //
-                //ftype currently is not saved, Im not sure how to get this variable into D
-                // fpush(ftype);
+
                 new Dtask().execute(url);
             }
         } else {
@@ -240,7 +239,7 @@ public class ChoiceStack {
                             im +
                             "&key=AIzaSyBDf3cLEXwV77wvfihpvNbsnqDOixWD4Kc";
 
-                    tmp.ftype = DatabaseHelper.FType.valueOf(ftype);
+                    tmp.ftype = DatabaseHelper.FType.findType(ftype);
                     //tmp.ftype=part1;
                     push(tmp);
 

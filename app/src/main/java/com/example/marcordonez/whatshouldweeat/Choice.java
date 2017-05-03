@@ -21,7 +21,7 @@ public class Choice {
         rating ="unavailable";
         address ="unavailable";
         imgurl="unavailable";
-        //ftype="unavailable";
+        ftype= DatabaseHelper.FType.OTHER;
 
 
     }

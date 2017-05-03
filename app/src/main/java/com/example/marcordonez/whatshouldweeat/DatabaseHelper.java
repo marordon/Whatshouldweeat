@@ -45,7 +45,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return displayName;
         }
 
-        public FType valueof(String s){
+        static public FType findType(String s){
             for (FType e: FType.values()) {
                 if(s.equals(e.getDisplayName())){
                     return e;
@@ -202,6 +202,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cv2.put(CHOICE_COLS.FTYPE, "FISHY");
 
         db.insert(CHOICE_TABLE_NAME, null, cv2);
+        db.close();
     }
 
     public void testRemove(){
@@ -228,9 +229,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 null,
                 null);
 
-        c.moveToFirst();
+        if(c.moveToFirst()) {
 
-        Log.d("DB TESTING, obj at in 0", c.getString(c.getColumnIndexOrThrow(CHOICE_COLS.NAME)));
+            Log.d("DB TESTING, obj at in 0", c.getString(c.getColumnIndexOrThrow(CHOICE_COLS.NAME)));
+        }
     }
 
     public void addChoice(Choice choice){

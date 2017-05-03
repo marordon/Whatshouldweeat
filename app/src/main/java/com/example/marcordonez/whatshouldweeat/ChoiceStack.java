@@ -240,7 +240,7 @@ public class ChoiceStack {
                             im +
                             "&key=AIzaSyBDf3cLEXwV77wvfihpvNbsnqDOixWD4Kc";
 
-                    tmp.ftype = ftype;
+                    tmp.ftype = DatabaseHelper.FType.valueOf(ftype);
                     //tmp.ftype=part1;
                     push(tmp);
 

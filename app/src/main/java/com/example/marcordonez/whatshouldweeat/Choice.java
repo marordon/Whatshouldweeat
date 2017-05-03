@@ -11,7 +11,7 @@ public class Choice {
     String rating;
     String address;
     String imgurl;
-    String ftype;
+    DatabaseHelper.FType ftype;
 
 
     public Choice() {
@@ -21,7 +21,7 @@ public class Choice {
         rating ="unavailable";
         address ="unavailable";
         imgurl="unavailable";
-        ftype="unavailable";
+        //ftype="unavailable";
 
 
     }
@@ -74,11 +74,11 @@ public class Choice {
         this.imgurl = imgurl;
     }
 
-    public String getFtype() {
+    public DatabaseHelper.FType getFtype() {
         return ftype;
     }
 
-    public void setFtype(String ftype) {
+    public void setFtype(DatabaseHelper.FType ftype) {
         this.ftype = ftype;
     }
 }

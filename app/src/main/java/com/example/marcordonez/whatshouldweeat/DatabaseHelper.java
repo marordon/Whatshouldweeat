@@ -27,8 +27,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         VEGAN(300, "vegan"), SANDWICH(320, "sandwich"), CAJUN(340, "cajun"),
         FISH(360, "fish"), OTHER(380, "other");
 
-        int startIndex;
-        String displayName;
+        private int startIndex;
+        private String displayName;
 
         FType(int startIndex, String displayName){
             this.startIndex = startIndex;
@@ -41,6 +41,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         public String getDisplayName() {
             return displayName;
+        }
+
+        public FType valueof(String s){
+            for (FType e: FType.values()) {
+                if(s.equals(e.getDisplayName())){
+                    return e;
+                }
+            }
+
+            return OTHER;
         }
     }
 
@@ -200,7 +210,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         r.setRating(String.valueOf(c.getDouble(c.getColumnIndexOrThrow(CHOICE_COLS.RATING))));
         r.setAddress(c.getString(c.getColumnIndexOrThrow(CHOICE_COLS.ADDRESS)));
         r.setImgurl(c.getString(c.getColumnIndexOrThrow(CHOICE_COLS.IMGURL)));
-        r.setFtype(c.getString(c.getColumnIndexOrThrow(CHOICE_COLS.FTYPE)));
+        r.setFtype(FType.valueOf(c.getString(c.getColumnIndexOrThrow(CHOICE_COLS.FTYPE))));
 
         return r;
     }

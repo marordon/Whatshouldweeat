@@ -3,6 +3,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationListener;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -207,6 +208,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext(), null, null, 0);
+        dbHelper.testAdd();
+        dbHelper.testGet();
+        dbHelper.testRemove();
+        dbHelper.testGet();
+
         setContentView(R.layout.activity_main);
         food = (Button) findViewById(R.id.Food);
         mapit = (Button) findViewById(R.id.Mapit);

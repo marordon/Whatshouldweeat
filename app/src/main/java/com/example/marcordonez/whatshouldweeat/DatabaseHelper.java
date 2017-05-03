@@ -1,10 +1,12 @@
 package com.example.marcordonez.whatshouldweeat;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.hardware.camera2.params.StreamConfigurationMap;
+import android.util.Log;
 
 /**
  * Created by Ben on 04/23/17.
@@ -177,10 +179,79 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(DROP_PREF_TABLE);
     }
 
+    public void testAdd(){
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(CHOICE_COLS.NAME, "test1");
+        cv.put(CHOICE_COLS.LAT, 100.0);
+        cv.put(CHOICE_COLS.LONG, 100.0);
+        cv.put(CHOICE_COLS.ADDRESS, "TEST ADDRESS");
+        cv.put(CHOICE_COLS.IMGURL, "http://test.url");
+        cv.put(CHOICE_COLS.RATING, 5.0);
+        cv.put(CHOICE_COLS.FTYPE, "FISHY");
+
+        db.insert(CHOICE_TABLE_NAME, null, cv);
+
+        ContentValues cv2 = new ContentValues();
+        cv2.put(CHOICE_COLS.NAME, "test2");
+        cv2.put(CHOICE_COLS.LAT, 100.0);
+        cv2.put(CHOICE_COLS.LONG, 100.0);
+        cv2.put(CHOICE_COLS.ADDRESS, "TEST ADDRESS");
+        cv2.put(CHOICE_COLS.IMGURL, "http://test.url");
+        cv2.put(CHOICE_COLS.RATING, 5.0);
+        cv2.put(CHOICE_COLS.FTYPE, "FISHY");
+
+        db.insert(CHOICE_TABLE_NAME, null, cv2);
+    }
+
+    public void testRemove(){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.delete(CHOICE_TABLE_NAME, CHOICE_COLS.ID + " = ?", new String[]{String.valueOf(0)});
+    }
+
+    public void testGet(){
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String[] pro = {CHOICE_COLS.ID, CHOICE_COLS.NAME, CHOICE_COLS.LAT, CHOICE_COLS.LONG,
+                CHOICE_COLS.ADDRESS, CHOICE_COLS.RATING, CHOICE_COLS.IMGURL,
+                CHOICE_COLS.FTYPE};
+
+        String selection = CHOICE_COLS.ID + " = ?";
+        String[] selArgs = {String.valueOf(0)};
+
+        Cursor c = db.query(CHOICE_TABLE_NAME,
+                pro,
+                selection,
+                selArgs,
+                null,
+                null,
+                null);
+
+        c.moveToFirst();
+
+        Log.d("DB TESTING, obj at in 0", c.getString(c.getColumnIndexOrThrow(CHOICE_COLS.NAME)));
+    }
+
     public void addChoice(Choice choice){
         // Calculate appropriate index to add
         if(choice != null){
             FType type = choice.getFtype();
+            int idOfOffset = (type.getStartIndex()/20) + 20;
+            int currentOffset;
+            SQLiteDatabase db = this.getReadableDatabase();
+
+            Cursor c = db.query(PREF_TABLE_NAME,
+                    new String[]{PREF_COLS.ID, PREF_COLS.NAME, PREF_COLS.VALUE},
+                    PREF_COLS.ID + " = ?",
+                    new String[]{String.valueOf(idOfOffset)},
+                    null,
+                    null,
+                    null);
+
+            if(c.moveToFirst()){
+                currentOffset = c.getInt(c.getColumnIndexOrThrow(PREF_COLS.VALUE));
+            }
         }
     }
 

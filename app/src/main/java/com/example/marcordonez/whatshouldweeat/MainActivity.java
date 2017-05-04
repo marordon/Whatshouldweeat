@@ -208,11 +208,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext(), null, null, 0);
-        dbHelper.testAdd();
-        dbHelper.testGet();
-        dbHelper.testRemove();
-        dbHelper.testGet();
+        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
+
+        Choice test1 = new Choice("Test1", "100.0", "100.0", "5.0", "Test Address", "http://www.test.com", DatabaseHelper.FType.MEXICAN);
+        Choice test2 = new Choice("Test2", "100.0", "100.0", "4.0", "Test Address", "http://www.test.com", DatabaseHelper.FType.SUSHI);
+        Choice test3 = new Choice("Test3", "100.0", "100.0", "3.0", "Test Address", "http://www.test.com", DatabaseHelper.FType.CHINESE);
+        Choice test4 = new Choice("Test4", "100.0", "100.0", "2.0", "Test Address", "http://www.test.com", DatabaseHelper.FType.SANDWICH);
+        Choice test5 = new Choice("Test5", "100.0", "100.0", "1.0", "Test Address", "http://www.test.com", DatabaseHelper.FType.STEAK);
+
 
         setContentView(R.layout.activity_main);
         food = (Button) findViewById(R.id.Food);
@@ -232,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             lat = gps.getLatitude(); // returns latitude
             longi = gps.getLongitude(); // returns longitude
             if (picker==null) {
-                picker = new ChoiceStack(5, prevLat, lat, prevLg, longi);
+                picker = new ChoiceStack(getApplicationContext(), 5, prevLat, lat, prevLg, longi);
             }
             try {
                 Thread.sleep(3000);
@@ -254,7 +257,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             lat = gps.getLatitude(); // returns latitude
             longi = gps.getLongitude(); // returns longitude
 
-            picker =new ChoiceStack(5,prevLat,lat,prevLg,longi);
+            picker =new ChoiceStack(getApplicationContext(), 5,prevLat,lat,prevLg,longi);
             try {
                 Thread.sleep(3000);
             } catch (InterruptedException e) {
@@ -301,7 +304,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             lat = gps.getLatitude(); // returns latitude
             longi = gps.getLongitude(); // returns longitude
 
-            picker =new ChoiceStack(5,prevLat,lat,prevLg,longi);
+            picker =new ChoiceStack(getApplicationContext(), 5,prevLat,lat,prevLg,longi);
 
 
             gps.stopUsingGPS();

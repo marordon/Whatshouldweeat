@@ -1,6 +1,8 @@
 package com.example.marcordonez.whatshouldweeat;
 
+import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,14 +26,16 @@ public class ChoiceStack {
     private int maxSize;
     private Choice[] stackArray;
     private int top;
-    public ChoiceStack(int s) {
+    private DatabaseHelper dbHelper;
+    public ChoiceStack(Context c, int s) {
         stackArray = new Choice[s*10];
         top = -1;
-
+        dbHelper = new DatabaseHelper(c);
     }
-    public ChoiceStack(int s,double prevLat, double lat,double prevLg, double longi) {
+    public ChoiceStack(Context c, int s,double prevLat, double lat,double prevLg, double longi) {
         stackArray = new Choice[s*10];
         top = -1;
+        dbHelper = new DatabaseHelper(c);
         refil(s,prevLat,lat,prevLg,longi);
 
     }
@@ -134,7 +138,7 @@ public class ChoiceStack {
             if(dataIsEmpty){
                 refil(s,prevLat,lat,prevLg,longi);
             }else{
-                //refill with entrys in database
+                return dbHelper.popChoice();
             }
             Choice temp=new Choice();
         return temp;
@@ -215,13 +219,24 @@ public class ChoiceStack {
 
                     final JSONArray place = obj.getJSONArray("results");
                     final int n = place.length();
+                    Log.e("DB TESTING", "Value of n: " + n);
                     Random randomGenerator = new Random();
                     int ran = randomGenerator.nextInt(n<=0?1:n);
                     final JSONObject choice = place.getJSONObject(ran);
                     for (int i = 1; i < n; i++) {
-                        if (i != ran) {
-                            //insert into database
-
+                        if (i != ran && dbHelper.getNumElements() <= 20) {
+                            final JSONObject Jobj = place.getJSONObject(i);
+                            Choice c = new Choice();
+                            c.setName(Jobj.getString("name"));
+                            c.setAddress(Jobj.getString("vicinity"));
+                            c.setLat(Jobj.getJSONObject("geometry").getJSONObject("location").getString("lat"));
+                            c.setLng(Jobj.getJSONObject("geometry").getJSONObject("location").getString("lng"));
+                            c.setRating(Jobj.getString("rating"));
+                            String image = choice.getJSONArray("photos").getJSONObject(randomGenerator.nextInt(choice.getJSONArray("photos").length())).getString("photo_reference");
+                            c.setImgurl("https://maps.googleapis.com/maps/api/place/photo?maxheight=250&photoreference=" +
+                                    image +
+                                    "&key=AIzaSyBDf3cLEXwV77wvfihpvNbsnqDOixWD4Kc");
+                            dbHelper.addChoice(c);
                         }
                     }
 

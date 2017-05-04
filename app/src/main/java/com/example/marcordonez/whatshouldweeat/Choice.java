@@ -22,8 +22,16 @@ public class Choice {
         address ="unavailable";
         imgurl="unavailable";
         ftype= DatabaseHelper.FType.OTHER;
+    }
 
-
+    public Choice(String name, String lat, String lng, String rating, String address, String imgurl, DatabaseHelper.FType ftype) {
+        this.name = name;
+        this.lat = lat;
+        this.lng = lng;
+        this.rating = rating;
+        this.address = address;
+        this.imgurl = imgurl;
+        this.ftype = ftype;
     }
 
     public String getName() {
@@ -80,5 +88,10 @@ public class Choice {
 
     public void setFtype(DatabaseHelper.FType ftype) {
         this.ftype = ftype;
+    }
+
+    @Override
+    public String toString(){
+        return "Choice: Name[" + getName() + "], Lat[" + getLat() + "], Long[" + getLng() + "], Rating[" + getRating() + "], Address[" + getAddress() + "], Imgurl[" + getImgurl() + "], Ftype[" + getFtype().getDisplayName() + "]";
     }
 }

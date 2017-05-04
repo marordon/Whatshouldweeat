@@ -6,7 +6,16 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.hardware.camera2.params.StreamConfigurationMap;
+import android.provider.Settings;
 import android.util.Log;
+
+import java.io.Console;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import static com.example.marcordonez.whatshouldweeat.DatabaseHelper.FType.FISH;
 
 /**
  * Created by Ben on 04/23/17.
@@ -117,25 +126,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
          * 17 = Sandwich
          * 18 = Cajun
          * 19 = Fish
-         * 20 = Mexican Index
-         * 21 = Italian Index
-         * 22 = Pizza Index
-         * 23 = Chinese Index
-         * 24 = Sushi Index
-         * 25 = Breakfast Index
-         * 26 = Thai Index
-         * 27 = Indian Index
-         * 28 = Hamburger Index
-         * 29 = Hotdog Index
-         * 30 = Noodles Index
-         * 31 = BBQ Index
-         * 32 = Seafood Index
-         * 33 = Steak Index
-         * 34 = Wings Index
-         * 35 = Vegan Index
-         * 36 = Sandwich Index
-         * 37 = Cajun Index
-         * 38 = Fish Index
          */
 
 
@@ -163,8 +153,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private final String DROP_CHOICE_TABLE = "DROP TABLE IF EXISTS " + CHOICE_TABLE_NAME;
     private final String DROP_PREF_TABLE = "DROP TABLE IF EXISTS " + PREF_TABLE_NAME;
 
-    public DatabaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, DATABASE_NAME, factory, DATABASE_VERSION);
+    public DatabaseHelper(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
@@ -179,93 +169,97 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(DROP_PREF_TABLE);
     }
 
-    public void testAdd(){
-        SQLiteDatabase db = getWritableDatabase();
+    public void addChoice(Choice choice){
+        SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
-        cv.put(CHOICE_COLS.NAME, "test1");
-        cv.put(CHOICE_COLS.LAT, 100.0);
-        cv.put(CHOICE_COLS.LONG, 100.0);
-        cv.put(CHOICE_COLS.ADDRESS, "TEST ADDRESS");
-        cv.put(CHOICE_COLS.IMGURL, "http://test.url");
-        cv.put(CHOICE_COLS.RATING, 5.0);
-        cv.put(CHOICE_COLS.FTYPE, "FISHY");
+        cv.put(CHOICE_COLS.NAME, choice.getName());
+        cv.put(CHOICE_COLS.LAT, Double.valueOf(choice.getLat()));
+        cv.put(CHOICE_COLS.LONG, Double.valueOf(choice.getLng()));
+        cv.put(CHOICE_COLS.ADDRESS, choice.getAddress());
+        cv.put(CHOICE_COLS.IMGURL, choice.getImgurl());
+        cv.put(CHOICE_COLS.RATING, Double.valueOf(choice.getRating()));
+        cv.put(CHOICE_COLS.FTYPE, choice.getFtype().getDisplayName());
 
-        db.insert(CHOICE_TABLE_NAME, null, cv);
-
-        ContentValues cv2 = new ContentValues();
-        cv2.put(CHOICE_COLS.NAME, "test2");
-        cv2.put(CHOICE_COLS.LAT, 100.0);
-        cv2.put(CHOICE_COLS.LONG, 100.0);
-        cv2.put(CHOICE_COLS.ADDRESS, "TEST ADDRESS");
-        cv2.put(CHOICE_COLS.IMGURL, "http://test.url");
-        cv2.put(CHOICE_COLS.RATING, 5.0);
-        cv2.put(CHOICE_COLS.FTYPE, "FISHY");
-
-        db.insert(CHOICE_TABLE_NAME, null, cv2);
+        long newId = db.insert(CHOICE_TABLE_NAME, null, cv);
+        Log.d("DB TESTING", choice.toString() + " added at " + newId);
         db.close();
     }
 
-    public void testRemove(){
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        db.delete(CHOICE_TABLE_NAME, CHOICE_COLS.ID + " = ?", new String[]{String.valueOf(0)});
-    }
-
-    public void testGet(){
+    private int getLowestID(){
         SQLiteDatabase db = this.getReadableDatabase();
-
-        String[] pro = {CHOICE_COLS.ID, CHOICE_COLS.NAME, CHOICE_COLS.LAT, CHOICE_COLS.LONG,
-                CHOICE_COLS.ADDRESS, CHOICE_COLS.RATING, CHOICE_COLS.IMGURL,
-                CHOICE_COLS.FTYPE};
-
-        String selection = CHOICE_COLS.ID + " = ?";
-        String[] selArgs = {String.valueOf(0)};
+        List<Integer> allIds = new ArrayList<>();
 
         Cursor c = db.query(CHOICE_TABLE_NAME,
-                pro,
-                selection,
-                selArgs,
+                new String[]{CHOICE_COLS.ID},
+                null,
+                null,
                 null,
                 null,
                 null);
 
-        if(c.moveToFirst()) {
-
-            Log.d("DB TESTING, obj at in 0", c.getString(c.getColumnIndexOrThrow(CHOICE_COLS.NAME)));
-        }
-    }
-
-    public void addChoice(Choice choice){
-        // Calculate appropriate index to add
-        if(choice != null){
-            FType type = choice.getFtype();
-            int idOfOffset = (type.getStartIndex()/20) + 20;
-            int currentOffset;
-            SQLiteDatabase db = this.getReadableDatabase();
-
-            Cursor c = db.query(PREF_TABLE_NAME,
-                    new String[]{PREF_COLS.ID, PREF_COLS.NAME, PREF_COLS.VALUE},
-                    PREF_COLS.ID + " = ?",
-                    new String[]{String.valueOf(idOfOffset)},
-                    null,
-                    null,
-                    null);
-
-            if(c.moveToFirst()){
-                currentOffset = c.getInt(c.getColumnIndexOrThrow(PREF_COLS.VALUE));
+        if(c.moveToFirst()){
+            while(!c.isAfterLast()){
+                allIds.add(c.getInt(c.getColumnIndexOrThrow(CHOICE_COLS.ID)));
+                c.moveToNext();
             }
         }
+        c.close();
+
+        return Collections.min(allIds);
     }
 
-    public Choice getChoice(int withID){
+    private int getLargetID(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<Integer> allIds = new ArrayList<>();
+
+        Cursor c = db.query(CHOICE_TABLE_NAME,
+                new String[]{CHOICE_COLS.ID},
+                null,
+                null,
+                null,
+                null,
+                null);
+
+        if(c.moveToFirst()){
+            while(!c.isAfterLast()){
+                allIds.add(c.getInt(c.getColumnIndexOrThrow(CHOICE_COLS.ID)));
+                c.moveToNext();
+            }
+        }
+        c.close();
+
+        return Collections.max(allIds);
+    }
+
+    public int getNumElements(){
+        SQLiteDatabase db = getReadableDatabase();
+
+        String[] pro = {CHOICE_COLS.ID, CHOICE_COLS.NAME, CHOICE_COLS.LAT, CHOICE_COLS.LONG,
+                CHOICE_COLS.ADDRESS, CHOICE_COLS.RATING, CHOICE_COLS.IMGURL,
+                CHOICE_COLS.FTYPE};
+
+        Cursor c = db.query(CHOICE_TABLE_NAME,
+                pro,
+                null,
+                null,
+                null,
+                null,
+                null);
+
+        return c.getCount();
+
+    }
+
+    public Choice popChoice(){
         SQLiteDatabase db = this.getReadableDatabase();
 
         String[] pro = {CHOICE_COLS.ID, CHOICE_COLS.NAME, CHOICE_COLS.LAT, CHOICE_COLS.LONG,
                 CHOICE_COLS.ADDRESS, CHOICE_COLS.RATING, CHOICE_COLS.IMGURL,
                 CHOICE_COLS.FTYPE};
 
+        int lowestId = getLowestID();
         String selection = CHOICE_COLS.ID + " = ?";
-        String[] selArgs = {String.valueOf(withID)};
+        String[] selArgs = {String.valueOf(lowestId)};
 
         Cursor c = db.query(CHOICE_TABLE_NAME,
                 pro,
@@ -283,9 +277,46 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         r.setRating(String.valueOf(c.getDouble(c.getColumnIndexOrThrow(CHOICE_COLS.RATING))));
         r.setAddress(c.getString(c.getColumnIndexOrThrow(CHOICE_COLS.ADDRESS)));
         r.setImgurl(c.getString(c.getColumnIndexOrThrow(CHOICE_COLS.IMGURL)));
-        r.setFtype(FType.valueOf(c.getString(c.getColumnIndexOrThrow(CHOICE_COLS.FTYPE))));
+        r.setFtype(FType.findType(c.getString(c.getColumnIndexOrThrow(CHOICE_COLS.FTYPE))));
+
+        Log.d("DB TESTING", r.toString());
+
+        db.delete(CHOICE_TABLE_NAME, CHOICE_COLS.ID + " = ?", new String[]{String.valueOf(lowestId)});
+        db.close();
 
         return r;
+    }
+
+    public void printAll(){
+        SQLiteDatabase db = getReadableDatabase();
+
+        String[] pro = {CHOICE_COLS.ID, CHOICE_COLS.NAME, CHOICE_COLS.LAT, CHOICE_COLS.LONG,
+                CHOICE_COLS.ADDRESS, CHOICE_COLS.RATING, CHOICE_COLS.IMGURL,
+                CHOICE_COLS.FTYPE};
+
+        Cursor c = db.query(CHOICE_TABLE_NAME,
+                pro,
+                null,
+                null,
+                null,
+                null,
+                null);
+
+        if(c.moveToFirst()){
+            while(!c.isAfterLast()){
+                Choice r = new Choice();
+                r.setName(c.getString(c.getColumnIndexOrThrow(CHOICE_COLS.NAME)));
+                r.setLat(String.valueOf(c.getDouble(c.getColumnIndexOrThrow(CHOICE_COLS.LAT))));
+                r.setLng(String.valueOf(c.getDouble(c.getColumnIndexOrThrow(CHOICE_COLS.LONG))));
+                r.setRating(String.valueOf(c.getDouble(c.getColumnIndexOrThrow(CHOICE_COLS.RATING))));
+                r.setAddress(c.getString(c.getColumnIndexOrThrow(CHOICE_COLS.ADDRESS)));
+                r.setImgurl(c.getString(c.getColumnIndexOrThrow(CHOICE_COLS.IMGURL)));
+                r.setFtype(FType.findType(c.getString(c.getColumnIndexOrThrow(CHOICE_COLS.FTYPE))));
+                Log.d("DB CONTENTS", r.toString());
+                c.moveToNext();
+            }
+        }
+
     }
 
     public int getNumVisitedForCategory(FType t){

@@ -7,13 +7,13 @@ import java.util.Random;
  */
 
 public class Choice {
-    String name;
-    String lat;
-    String lng;
-    String rateing;
-    String adress;
-    String imgurl;
-    String ftype;
+    public String name;
+    public String lat;
+    public String lng;
+    public String rateing;
+    public String adress;
+    public String imgurl;
+    public String ftype;
 
 
     public Choice() {

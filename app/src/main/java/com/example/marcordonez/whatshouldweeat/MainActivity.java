@@ -7,11 +7,13 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.Manifest;
 import android.location.LocationManager;
@@ -37,15 +39,18 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import android.net.Uri;
 import android.webkit.WebViewClient;
 
+import layout.FoodDisp;
 
+//extends FragmentActivity
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
+public class MainActivity extends FragmentActivity implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
     Button food;
     Button mapit;
     TextView whatYouWant;
     TextView info;
     TextView weblist;
     WebView webView;
+    ImageView imview;
     ChoiceStack picker;
 
     private GoogleApiClient mGoogleApiClient;
@@ -219,15 +224,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        imview = (ImageView) findViewById(R.id.imageView);
         setContentView(R.layout.activity_main);
-        food = (Button) findViewById(R.id.Food);
-        mapit = (Button) findViewById(R.id.Mapit);
-        whatYouWant = (TextView) findViewById(R.id.WhatYouWant);
-        weblist = (TextView) findViewById(R.id.weblist);
-        info = (TextView) findViewById(R.id.info);
-        webView=(WebView) findViewById(R.id.webView);
-        GPSTracker gps = new GPSTracker(this);
-        food.setEnabled(false);
+        MainActivity.GPSTracker gps = new MainActivity.GPSTracker(this);
+        FoodDisp fooddisp = (FoodDisp) getSupportFragmentManager().findFragmentById(R.id.FoodDisp_fragment);
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
 
 
@@ -245,16 +245,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 e.printStackTrace();
             }
 
-            food.setEnabled(true);
+            //food.setEnabled(true);
             gps.stopUsingGPS();
         }
         else {
-            whatYouWant.setText("Location Unavailable");
-            food.setEnabled(false);
+            //whatYouWant.setText("Location Unavailable");
+           // food.setEnabled(false);
             while (!gps.canGetLocation()){
 
             }
-            whatYouWant.setText("Location Detected");
+           // whatYouWant.setText("Location Detected");
 
             lat = gps.getLatitude(); // returns latitude
             longi = gps.getLongitude(); // returns longitude
@@ -266,7 +266,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 e.printStackTrace();
             }
 
-            food.setEnabled(true);
+           // food.setEnabled(true);
             gps.stopUsingGPS();
         }
 
@@ -293,6 +293,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             //whatYouWant.setText( "nope");
 
         }
+
+        fooddisp.passStack(picker,prevLat,lat,prevLg,longi);
     }
 
     @Override
@@ -322,50 +324,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         super.onStop();
     }
     //selects category
-    public void onClickFood(View view) {
-        if(picker.isEmpty()){
-            ProgressDialog dialog=new ProgressDialog(this);
-            dialog.setMessage("Loading");
-            dialog.setCancelable(true);
-            dialog.setInverseBackgroundForced(false);
-            dialog.show();
-
-            picker.refil(5,prevLat,lat,prevLg,longi);
-          // while (picker.isEmpty()){
-
-          // }
-
-            dialog.hide();
-        }
-        Choice next = picker.pop(5,prevLat,lat,prevLg,longi);
-
-        String pick="\nRating: ";
-        pick=pick.concat(next.rateing);
-        pick=pick.concat("\nLocation: ");
-        pick=pick.concat(next.adress);
-
-        whatYouWant.setText(next.name);
-        info.setText(pick);
-        mapit.setVisibility(View.VISIBLE);
-        maplat= next.lat;
-        maplon= next.lng;
-        webView.setVisibility(View.VISIBLE);
-        webView.setWebViewClient(new WebViewClient());
-        webView.loadUrl(next.imgurl);
-        weblist.setText(next.ftype);
 
 
 
-    }
 
-
-    public void onClickMapit(View view) {
-        Uri gmmIntentUri = Uri.parse("google.navigation:q="+maplat+","+maplon);
-        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-        mapIntent.setPackage("com.google.android.apps.maps");
-        startActivity(mapIntent);
-
-    }
 
 //used to process the results from api
 @Override

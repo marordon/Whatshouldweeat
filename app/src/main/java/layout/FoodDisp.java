@@ -99,19 +99,19 @@ food.setOnClickListener(
         Choice next = picker.pop(5,prevLat,lat,prevLg,longi);
 
         String pick="\nRating: ";
-        pick=pick.concat(next.rateing);
+        pick=pick.concat(next.getRating());
         pick=pick.concat("\nLocation: ");
-        pick=pick.concat(next.adress);
+        pick=pick.concat(next.getAddress());
 
-        whatYouWant.setText(next.name);
+        whatYouWant.setText(next.getName());
         info.setText(pick);
         mapit.setVisibility(View.VISIBLE);
-        maplat= next.lat;
-        maplon= next.lng;
+        maplat= next.getLat();
+        maplon= next.getLng();
         webView.setVisibility(View.VISIBLE);
         webView.setWebViewClient(new WebViewClient());
-        webView.loadUrl(next.imgurl);
-        weblist.setText(next.ftype.getDisplayName());
+        webView.loadUrl(next.getImgurl());
+        weblist.setText(next.getFtype().getDisplayName());
 
 
 

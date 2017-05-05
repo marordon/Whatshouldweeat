@@ -319,71 +319,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public int getNumVisitedForCategory(FType t){
-        int id = 0;
-        switch(t){
-            case MEXICAN:
-                id = 1;
-                break;
-            case ITALIAN:
-                id = 2;
-                break;
-            case PIZZA:
-                id = 3;
-                break;
-            case CHINESE:
-                id = 4;
-                break;
-            case SUSHI:
-                id = 5;
-                break;
-            case BREAKFAST:
-                id = 6;
-                break;
-            case THAI:
-                id = 7;
-                break;
-            case INDIAN:
-                id = 8;
-                break;
-            case HAMBURGER:
-                id = 9;
-                break;
-            case HOTDOG:
-                id = 10;
-                break;
-            case NOODLES:
-                id = 11;
-                break;
-            case BBQ:
-                id = 12;
-                break;
-            case SEAFOOD:
-                id = 13;
-                break;
-            case STEAK:
-                id = 14;
-                break;
-            case WINGS:
-                id = 15;
-                break;
-            case VEGAN:
-                id = 16;
-                break;
-            case SANDWICH:
-                id = 17;
-                break;
-            case CAJUN:
-                id = 18;
-                break;
-            case FISH:
-                id = 19;
-                break;
-        }
-
+    public int getTotalVisits(){
         String[] pro = {PREF_COLS.ID, PREF_COLS.NAME, PREF_COLS.VALUE};
-        String selection = CHOICE_COLS.ID + " = ?";
-        String[] selArgs = {String.valueOf(id)};
+        String selection = CHOICE_COLS.NAME + " = ?";
+        String[] selArgs = {String.valueOf("total")};
 
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -400,6 +339,55 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } else {
             return -1;
         }
+    }
+
+    public int getNumVisitedForCategory(FType t){
+        String[] pro = {PREF_COLS.ID, PREF_COLS.NAME, PREF_COLS.VALUE};
+        String selection = CHOICE_COLS.NAME + " = ?";
+        String[] selArgs = {String.valueOf(t.getDisplayName())};
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor c = db.query(PREF_TABLE_NAME,
+                pro,
+                selection,
+                selArgs,
+                null,
+                null,
+                null);
+
+        if (c.moveToFirst()) {
+            return c.getInt(c.getColumnIndexOrThrow(PREF_COLS.VALUE));
+        } else {
+            return -1;
+        }
+    }
+
+    public void incrementCategory(FType t){
+        SQLiteDatabase db = this.getWritableDatabase();
+        int currentValue = 0;
+        String[] pro = {PREF_COLS.ID, PREF_COLS.NAME, PREF_COLS.VALUE};
+        String selection = PREF_COLS.NAME + " = ?";
+        String[] selArgs = {String.valueOf(t.getDisplayName())};
+
+        Cursor c = db.query(PREF_TABLE_NAME,
+                pro,
+                selection,
+                selArgs,
+                null,
+                null,
+                null);
+
+        if(c.moveToFirst()){
+            currentValue = c.getInt(c.getColumnIndexOrThrow(PREF_COLS.VALUE));
+        }
+
+        ContentValues cv = new ContentValues();
+        cv.put(PREF_COLS.NAME, t.getDisplayName());
+        cv.put(PREF_COLS.VALUE, currentValue+1);
+
+        db.update(PREF_TABLE_NAME, cv, PREF_COLS.NAME + " = ?", new String[]{t.getDisplayName()});
+        db.close();
     }
 
 

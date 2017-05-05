@@ -1,31 +1,39 @@
 package com.example.marcordonez.whatshouldweeat;
 
-import java.util.Random;
-
 /**
  * Created by marcordonez on 4/22/17.
  */
 
 public class Choice {
-    public String name;
-    public String lat;
-    public String lng;
-    public String rateing;
-    public String adress;
-    public String imgurl;
-    public String ftype;
+
+    String name;
+    String lat;
+    String lng;
+    String rating;
+    String address;
+    String imgurl;
+    DatabaseHelper.FType ftype;
+
 
 
     public Choice() {
         name="unavailable";
         lat="unavailable";
         lng="unavailable";
-        rateing="unavailable";
-        adress="unavailable";
+        rating ="unavailable";
+        address ="unavailable";
         imgurl="unavailable";
-        ftype="unavailable";
+        ftype= DatabaseHelper.FType.OTHER;
+    }
 
-
+    public Choice(String name, String lat, String lng, String rating, String address, String imgurl, DatabaseHelper.FType ftype) {
+        this.name = name;
+        this.lat = lat;
+        this.lng = lng;
+        this.rating = rating;
+        this.address = address;
+        this.imgurl = imgurl;
+        this.ftype = ftype;
     }
 
     public String getName() {
@@ -52,20 +60,20 @@ public class Choice {
         this.lng = lng;
     }
 
-    public String getRateing() {
-        return rateing;
+    public String getRating() {
+        return rating;
     }
 
-    public void setRateing(String rateing) {
-        this.rateing = rateing;
+    public void setRating(String rating) {
+        this.rating = rating;
     }
 
-    public String getAdress() {
-        return adress;
+    public String getAddress() {
+        return address;
     }
 
-    public void setAdress(String adress) {
-        this.adress = adress;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getImgurl() {
@@ -76,11 +84,16 @@ public class Choice {
         this.imgurl = imgurl;
     }
 
-    public String getFtype() {
+    public DatabaseHelper.FType getFtype() {
         return ftype;
     }
 
-    public void setFtype(String ftype) {
+    public void setFtype(DatabaseHelper.FType ftype) {
         this.ftype = ftype;
+    }
+
+    @Override
+    public String toString(){
+        return "Choice: Name[" + getName() + "], Lat[" + getLat() + "], Long[" + getLng() + "], Rating[" + getRating() + "], Address[" + getAddress() + "], Imgurl[" + getImgurl() + "], Ftype[" + getFtype().getDisplayName() + "]";
     }
 }

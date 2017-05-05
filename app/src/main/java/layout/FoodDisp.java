@@ -111,7 +111,7 @@ food.setOnClickListener(
         webView.setVisibility(View.VISIBLE);
         webView.setWebViewClient(new WebViewClient());
         webView.loadUrl(next.imgurl);
-        weblist.setText(next.ftype);
+        weblist.setText(next.ftype.getDisplayName());
 
 
 

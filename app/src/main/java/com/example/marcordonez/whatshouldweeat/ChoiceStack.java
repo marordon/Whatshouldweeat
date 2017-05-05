@@ -1,9 +1,8 @@
 package com.example.marcordonez.whatshouldweeat;
 
+import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,11 +12,12 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Random;
-import com.google.android.gms.common.ConnectionResult;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import static com.example.marcordonez.whatshouldweeat.DatabaseHelper.FType.*;
 
 /**
  * Created by marcordonez on 4/21/17.
@@ -26,14 +26,16 @@ public class ChoiceStack {
     private int maxSize;
     private Choice[] stackArray;
     private int top;
-    public ChoiceStack(int s) {
+    private DatabaseHelper dbHelper;
+    public ChoiceStack(Context c, int s) {
         stackArray = new Choice[s*10];
         top = -1;
-
+        dbHelper = new DatabaseHelper(c);
     }
-    public ChoiceStack(int s,double prevLat, double lat,double prevLg, double longi) {
+    public ChoiceStack(Context c, int s,double prevLat, double lat,double prevLg, double longi) {
         stackArray = new Choice[s*10];
         top = -1;
+        dbHelper = new DatabaseHelper(c);
         refil(s,prevLat,lat,prevLg,longi);
 
     }
@@ -67,57 +69,56 @@ public class ChoiceStack {
 
                 Random randomGenerator = new Random();
                 int rndm = randomGenerator.nextInt(100);
-                String ftype = "";
+                DatabaseHelper.FType ftype;
                 if (rndm >=0 && rndm <=mex) {
-                    ftype = "mexican";
+                    ftype = MEXICAN;
                 } else if (rndm <=ital) {
-                    ftype = "italian";
+                    ftype = ITALIAN;
                 } else if (rndm <=pizza) {
-                    ftype = "pizza";
+                    ftype = PIZZA;
                 } else if (rndm <=chinese) {
-                    ftype = "chinese";
+                    ftype = CHINESE;
                 } else if (rndm <=sushi) {
-                    ftype = "sushi";
+                    ftype = SUSHI;
                 } else if (rndm <=bfast) {
-                    ftype = "breakfast";
+                    ftype = BREAKFAST;
                 } else if (rndm <=thai) {
-                    ftype = "thai";
+                    ftype = THAI;
                 } else if (rndm <=indian) {
-                    ftype = "indian";
+                    ftype = INDIAN;
                 } else if (rndm <=burger) {
-                    ftype = "hamburger";
+                    ftype = HAMBURGER;
                 } else if (rndm <=hdog) {
-                    ftype = "hotdog";
+                    ftype = HOTDOG;
                 } else if (rndm <=noodles) {
-                    ftype = "noodles";
+                    ftype = NOODLES;
                 } else if (rndm <=bbq) {
-                    ftype = "bbq";
+                    ftype = BBQ;
                 } else if (rndm <=seafood) {
-                    ftype = "seafood";
+                    ftype = SEAFOOD;
                 } else if (rndm <=steak) {
-                    ftype = "steak";
+                    ftype = STEAK;
                 } else if (rndm <=wings) {
-                    ftype = "wings";
+                    ftype = WINGS;
                 } else if (rndm <=vegan) {
-                    ftype = "vegan";
+                    ftype = VEGAN;
                 } else if (rndm <=sandwitch) {
-                    ftype = "sandwitch";
+                    ftype = SANDWICH;
                 } else if (rndm <=cajun) {
-                    ftype = "cajun";
+                    ftype = CAJUN;
                 }
                 else {
-                    ftype = "fish";
+                    ftype = FISH;
                 }
                 String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=";
                 url = url.concat(String.valueOf(Double.toString(lat)));
                 url = url.concat(",");
                 url = url.concat(String.valueOf(Double.toString(longi)));
                 url = url.concat("&rankby=distance&type=restaurant&key=AIzaSyBDf3cLEXwV77wvfihpvNbsnqDOixWD4Kc&opennow&keyword=");
-                url = url.concat(ftype);
+                url = url.concat(ftype.getDisplayName());
                 //url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=33.58576431,-101.87939933&radius=500&type=restaurant&key=AIzaSyBDf3cLEXwV77wvfihpvNbsnqDOixWD4Kc";
                 //
-                //ftype currently is not saved, Im not sure how to get this variable into D
-                // fpush(ftype);
+
                 new Dtask().execute(url);
             }
         } else {
@@ -137,7 +138,7 @@ public class ChoiceStack {
             if(dataIsEmpty){
                 refil(s,prevLat,lat,prevLg,longi);
             }else{
-                //refill with entrys in database
+                return dbHelper.popChoice();
             }
             Choice temp=new Choice();
         return temp;
@@ -176,7 +177,7 @@ public class ChoiceStack {
                 while ((line = reader.readLine()) != null) {
                     buffer.append(line);
                 }
-String temp = urls[0]+" "+buffer.toString();
+                String temp = urls[0]+" "+buffer.toString();
                 return temp;
 
             } catch (MalformedURLException e) {
@@ -218,13 +219,24 @@ String temp = urls[0]+" "+buffer.toString();
 
                     final JSONArray place = obj.getJSONArray("results");
                     final int n = place.length();
+                    Log.e("DB TESTING", "Value of n: " + n);
                     Random randomGenerator = new Random();
                     int ran = randomGenerator.nextInt(n<=0?1:n);
                     final JSONObject choice = place.getJSONObject(ran);
                     for (int i = 1; i < n; i++) {
-                        if (i != ran) {
-                            //insert into database
-
+                        if (i != ran && dbHelper.getNumElements() <= 20) {
+                            final JSONObject Jobj = place.getJSONObject(i);
+                            Choice c = new Choice();
+                            c.setName(Jobj.getString("name"));
+                            c.setAddress(Jobj.getString("vicinity"));
+                            c.setLat(Jobj.getJSONObject("geometry").getJSONObject("location").getString("lat"));
+                            c.setLng(Jobj.getJSONObject("geometry").getJSONObject("location").getString("lng"));
+                            c.setRating(Jobj.getString("rating"));
+                            String image = choice.getJSONArray("photos").getJSONObject(randomGenerator.nextInt(choice.getJSONArray("photos").length())).getString("photo_reference");
+                            c.setImgurl("https://maps.googleapis.com/maps/api/place/photo?maxheight=250&photoreference=" +
+                                    image +
+                                    "&key=AIzaSyBDf3cLEXwV77wvfihpvNbsnqDOixWD4Kc");
+                            dbHelper.addChoice(c);
                         }
                     }
 
@@ -233,16 +245,16 @@ String temp = urls[0]+" "+buffer.toString();
 
 
                     tmp.name = choice.getString("name");
-                    tmp.adress = choice.getString("vicinity");
+                    tmp.address = choice.getString("vicinity");
                     tmp.lat = choice.getJSONObject("geometry").getJSONObject("location").getString("lat");
                     tmp.lng = choice.getJSONObject("geometry").getJSONObject("location").getString("lng");
-                    tmp.rateing = choice.getString("rating");
+                    tmp.rating = choice.getString("rating");
                     String im = choice.getJSONArray("photos").getJSONObject(randomGenerator.nextInt(choice.getJSONArray("photos").length())).getString("photo_reference");
                     tmp.imgurl = "https://maps.googleapis.com/maps/api/place/photo?maxheight=250&photoreference=" +
                             im +
                             "&key=AIzaSyBDf3cLEXwV77wvfihpvNbsnqDOixWD4Kc";
 
-                    tmp.ftype = ftype;
+                    tmp.ftype = DatabaseHelper.FType.findType(ftype);
                     //tmp.ftype=part1;
                     push(tmp);
 

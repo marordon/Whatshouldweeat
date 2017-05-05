@@ -3,7 +3,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationListener;
-import android.os.AsyncTask;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -21,17 +21,6 @@ import android.location.Location;
 import android.content.Context;
 import android.os.IBinder;
 import android.app.Service;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONArray;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Random;
 import android.util.Log;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.common.ConnectionResult;
@@ -224,7 +213,19 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         imview = (ImageView) findViewById(R.id.imageView);
+
+        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
+
+        Choice test1 = new Choice("Test1", "100.0", "100.0", "5.0", "Test Address", "http://www.test.com", DatabaseHelper.FType.MEXICAN);
+        Choice test2 = new Choice("Test2", "100.0", "100.0", "4.0", "Test Address", "http://www.test.com", DatabaseHelper.FType.SUSHI);
+        Choice test3 = new Choice("Test3", "100.0", "100.0", "3.0", "Test Address", "http://www.test.com", DatabaseHelper.FType.CHINESE);
+        Choice test4 = new Choice("Test4", "100.0", "100.0", "2.0", "Test Address", "http://www.test.com", DatabaseHelper.FType.SANDWICH);
+        Choice test5 = new Choice("Test5", "100.0", "100.0", "1.0", "Test Address", "http://www.test.com", DatabaseHelper.FType.STEAK);
+
+
+
         setContentView(R.layout.activity_main);
         MainActivity.GPSTracker gps = new MainActivity.GPSTracker(this);
         FoodDisp fooddisp = (FoodDisp) getSupportFragmentManager().findFragmentById(R.id.FoodDisp_fragment);
@@ -237,7 +238,7 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
             lat = gps.getLatitude(); // returns latitude
             longi = gps.getLongitude(); // returns longitude
             if (picker==null) {
-                picker = new ChoiceStack(5, prevLat, lat, prevLg, longi);
+                picker = new ChoiceStack(getApplicationContext(), 5, prevLat, lat, prevLg, longi);
             }
             try {
                 Thread.sleep(3000);
@@ -259,7 +260,7 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
             lat = gps.getLatitude(); // returns latitude
             longi = gps.getLongitude(); // returns longitude
 
-            picker =new ChoiceStack(5,prevLat,lat,prevLg,longi);
+            picker =new ChoiceStack(getApplicationContext(), 5,prevLat,lat,prevLg,longi);
             try {
                 Thread.sleep(3000);
             } catch (InterruptedException e) {
@@ -308,7 +309,7 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
             lat = gps.getLatitude(); // returns latitude
             longi = gps.getLongitude(); // returns longitude
 
-            picker =new ChoiceStack(5,prevLat,lat,prevLg,longi);
+            picker =new ChoiceStack(getApplicationContext(), 5,prevLat,lat,prevLg,longi);
 
 
             gps.stopUsingGPS();

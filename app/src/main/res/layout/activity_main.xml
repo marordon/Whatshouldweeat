@@ -9,6 +9,18 @@
     tools:context="com.example.marcordonez.whatshouldweeat.MainActivity">
 
 
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="-5dp"
+        android:layout_marginTop="50dp"
+        android:text="FoodUp!"
+        android:textColor="#FFFFFF"
+        android:textSize="50dp" />
+
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="130dp"
@@ -43,22 +55,26 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <fragment
                 android:id="@+id/FoodDisp_fragment"
                 android:name="layout.FoodDisp"
                 android:layout_width="match_parent"
                 android:layout_height="400dp"
+                android:layout_above="@+id/imageView"
                 android:layout_weight="1"
                 tools:layout="@layout/fragment_food_disp" />
 
+
             <ImageButton
                 android:id="@+id/settingsButton"
-                android:layout_width="33dp"
-                android:layout_height="33dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_alignRight="@id/fup"
-                android:src="@drawable/ic_expand" />
+                android:scaleType="fitCenter"
+                android:src="@drawable/gear" />
+
         </LinearLayout>
     </ScrollView>
 

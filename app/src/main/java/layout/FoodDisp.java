@@ -60,6 +60,7 @@ View view = inflater.inflate(R.layout.fragment_food_disp, container, false);
         info = (TextView) view.findViewById(R.id.info);
         webView=(WebView) view.findViewById(R.id.webView);
         //MainActivity.GPSTracker gps = new MainActivity.GPSTracker(this);
+       // picker.refil(5,prevLat,lat,prevLg,longi);
 
 food.setOnClickListener(
         new View.OnClickListener(){

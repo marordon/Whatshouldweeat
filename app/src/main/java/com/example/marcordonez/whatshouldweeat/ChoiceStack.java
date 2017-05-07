@@ -132,7 +132,7 @@ public class ChoiceStack {
         stackArray[++top] = j;
     }
     public Choice pop(int s,double prevLat, double lat,double prevLg, double longi) {
-        if (top<=1){
+        if (top<=3){
             //temporary variable till database is linked in
             boolean dataIsEmpty=true;
             if(dataIsEmpty){

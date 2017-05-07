@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.Manifest;
@@ -22,6 +23,9 @@ import android.content.Context;
 import android.os.IBinder;
 import android.app.Service;
 import android.util.Log;
+
+import com.google.android.gms.ads.formats.NativeAd;
+import com.google.android.gms.location.SettingsApi;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -213,20 +217,20 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
         imview = (ImageView) findViewById(R.id.imageView);
+        ImageButton settingsBtn = (ImageButton) findViewById(R.id.settingsButton);
+        settingsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("TESTING", "Image Clicked");
+                Intent i = new Intent(getApplicationContext(), SettingsActivity.class);
+                startActivity(i);
+            }
+        });
 
-        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
 
-        Choice test1 = new Choice("Test1", "100.0", "100.0", "5.0", "Test Address", "http://www.test.com", DatabaseHelper.FType.MEXICAN);
-        Choice test2 = new Choice("Test2", "100.0", "100.0", "4.0", "Test Address", "http://www.test.com", DatabaseHelper.FType.SUSHI);
-        Choice test3 = new Choice("Test3", "100.0", "100.0", "3.0", "Test Address", "http://www.test.com", DatabaseHelper.FType.CHINESE);
-        Choice test4 = new Choice("Test4", "100.0", "100.0", "2.0", "Test Address", "http://www.test.com", DatabaseHelper.FType.SANDWICH);
-        Choice test5 = new Choice("Test5", "100.0", "100.0", "1.0", "Test Address", "http://www.test.com", DatabaseHelper.FType.STEAK);
-
-
-
-        setContentView(R.layout.activity_main);
         MainActivity.GPSTracker gps = new MainActivity.GPSTracker(this);
         FoodDisp fooddisp = (FoodDisp) getSupportFragmentManager().findFragmentById(R.id.FoodDisp_fragment);
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
